@@ -1,6 +1,6 @@
-use crate::register::{Registers, FlagsRegister};
+use crate::register::Registers;
 
-struct CPU {
+pub struct CPU {
   registers: Registers,
   pc: u16,
   sp: u16,
@@ -8,10 +8,14 @@ struct CPU {
 }
 
 struct MemoryBus {
-  memory: [u8; 0xFFFF]
+  memory: [u8; 0x10000]
 }
 
 impl MemoryBus {
+  pub fn new() -> MemoryBus {
+    MemoryBus { memory: [0; 0x10000] }
+  }
+
   fn read_byte(&self, address: u16) -> u8 {
     self.memory[address as usize]
   }
@@ -42,6 +46,7 @@ enum LoadType {
 }
 
 enum Instruction {
+  NOP,
   ADD(ArithmeticTarget),
   PUSH(StackTarget),
   POP(StackTarget),
@@ -95,6 +100,7 @@ impl Instruction {
 
   fn from_byte_not_prefixed(byte: u8) -> Option<Instruction> {
     match byte {
+      0x00 => Some(Instruction::NOP),
       0x02 => Some(Instruction::INC(IncDecTarget::BC)),
       0x03 => Some(Instruction::INC(IncDecTarget::BC)),
       0x04 => Some(Instruction::INC(IncDecTarget::B)),
@@ -106,6 +112,15 @@ impl Instruction {
 }
 
 impl CPU {
+  pub fn new() -> CPU {
+    CPU {
+      registers: Registers::new(),
+      pc: 0,
+      sp: 0,
+      bus: MemoryBus::new(),
+    }
+  }
+
   fn read_next_byte(&self) -> u8 {
     self.bus.read_byte(self.pc + 1)
   }
@@ -130,6 +145,7 @@ impl CPU {
 
   fn execute(&mut self, instruction: Instruction) -> u16 {
     match instruction {
+      Instruction::NOP => self.pc.wrapping_add(1),
       Instruction::ADD(target) => {
         match target {
           ArithmeticTarget::C => {
@@ -207,7 +223,7 @@ impl CPU {
     }
   }
 
-  fn step(&mut self) {
+  pub fn step(&mut self) {
     let mut instruction_byte = self.bus.read_byte(self.pc);
     let prefixed = instruction_byte == 0xCB;
     if prefixed {

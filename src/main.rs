@@ -1,7 +1,12 @@
-mod CPU;
+mod cpu;
 mod register;
 
 fn main() {
     println!("Emulator is starting!");
-    // ここにエミュレータの初期化コードやメインループを記述します。
+
+    let mut cpu = cpu::CPU::new();
+
+    loop {
+        cpu.step();
+    }
 }
