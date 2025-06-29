@@ -1,7 +1,7 @@
 use emulator::cpu::CPU;
 
 #[test]
-fn test_nop() {
+fn nop() {
     let mut cpu = CPU::new();
     cpu.bus.write_byte(0x00, 0x00);
     cpu.step();
