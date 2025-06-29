@@ -1,10 +1,9 @@
-mod cpu;
-mod register;
+use emulator::cpu::CPU;
 
 fn main() {
     println!("Emulator is starting!");
 
-    let mut cpu = cpu::CPU::new();
+    let mut cpu = CPU::new();
 
     loop {
         cpu.step();

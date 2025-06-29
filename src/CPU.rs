@@ -1,13 +1,14 @@
 use crate::register::Registers;
+use crate::instruction::*;
 
 pub struct CPU {
   registers: Registers,
-  pc: u16,
+  pub pc: u16,
   sp: u16,
-  bus: MemoryBus,
+  pub bus: MemoryBus,
 }
 
-struct MemoryBus {
+pub struct MemoryBus {
   memory: [u8; 0x10000]
 }
 
@@ -20,94 +21,8 @@ impl MemoryBus {
     self.memory[address as usize]
   }
 
-  fn write_byte(&mut self, address: u16, value: u8) {
+  pub fn write_byte(&mut self, address: u16, value: u8) {
     self.memory[address as usize] = value;
-  }
-}
-
-enum JumpTest {
-  NotZero,
-  Zero,
-  NotCarry,
-  Carry,
-  Always
-}
-
-enum LoadByteTarget {
-    A, B, C, D, E, H, L, HLI
-}
-
-enum LoadByteSource {
-    A, B, C, D, E, H, L, D8, HLI
-}
-
-enum LoadType {
-  Byte(LoadByteTarget, LoadByteSource),
-}
-
-enum Instruction {
-  NOP,
-  ADD(ArithmeticTarget),
-  PUSH(StackTarget),
-  POP(StackTarget),
-  CALL(JumpTest),
-  RET(JumpTest),
-  RLC(PrefixTarget),
-  INC(IncDecTarget),
-  DEC(IncDecTarget),
-  JP(JumpTest),
-  LD(LoadType),
-}
-
-enum ArithmeticTarget {
-    A, B, C, D, E, H, L, D8, HLI
-}
-
-enum IncDecTarget {
-    A, B, C, D, E, H, L, HLI, BC, DE, HL, SP
-}
-
-enum PrefixTarget {
-    A, B, C, D, E, H, L, HLI
-}
-
-enum StackTarget {
-    AF, BC, DE, HL
-}
-
-impl Instruction {
-  fn from_byte(byte: u8, prefixed: bool) -> Option<Instruction> {
-    if prefixed {
-      Instruction::from_byte_prefixed(byte)
-    } else {
-      Instruction::from_byte_not_prefixed(byte)
-    }
-  }
-
-  fn from_byte_prefixed(byte: u8) -> Option<Instruction> {
-    match byte {
-      0x00 => Some(Instruction::RLC(PrefixTarget::B)),
-      0x01 => Some(Instruction::RLC(PrefixTarget::C)),
-      0x02 => Some(Instruction::RLC(PrefixTarget::D)),
-      0x03 => Some(Instruction::RLC(PrefixTarget::E)),
-      0x04 => Some(Instruction::RLC(PrefixTarget::H)),
-      0x05 => Some(Instruction::RLC(PrefixTarget::L)),
-      0x06 => Some(Instruction::RLC(PrefixTarget::HLI)),
-      0x07 => Some(Instruction::RLC(PrefixTarget::A)),
-      _ => None
-    }
-  }
-
-  fn from_byte_not_prefixed(byte: u8) -> Option<Instruction> {
-    match byte {
-      0x00 => Some(Instruction::NOP),
-      0x02 => Some(Instruction::INC(IncDecTarget::BC)),
-      0x03 => Some(Instruction::INC(IncDecTarget::BC)),
-      0x04 => Some(Instruction::INC(IncDecTarget::B)),
-      0x05 => Some(Instruction::DEC(IncDecTarget::B)),
-      0x06 => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::B, LoadByteSource::D8))),
-      _ => None
-    }
   }
 }
 
@@ -287,15 +202,3 @@ impl CPU {
   }
 }
 
-#[cfg(test)]
-mod tests {
-  use super::*;
-
-  #[test]
-  fn test_nop() {
-    let mut cpu = CPU::new();
-    cpu.bus.write_byte(0x00, 0x00); // NOP instruction
-    cpu.step();
-    assert_eq!(cpu.pc, 0x01);
-  }
-}
