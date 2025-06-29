@@ -2,7 +2,7 @@ use crate::register::Registers;
 use crate::instruction::*;
 
 pub struct CPU {
-  registers: Registers,
+  pub registers: Registers,
   pub pc: u16,
   sp: u16,
   pub bus: MemoryBus,
@@ -99,6 +99,21 @@ impl CPU {
             match source {
               LoadByteSource::D8  => self.pc.wrapping_add(2),
               _                   => self.pc.wrapping_add(1),
+            }
+          },
+          LoadType::TwoByte(target, source) => {
+            let source_value = match source {
+              LoadTwoByteSource::D16 => self.bus.read_byte(self.pc + 1) as u16
+                | (self.bus.read_byte(self.pc + 2) as u16) << 8,
+              _ => { panic!("TODO: implement other sources") }
+            };
+            match target {
+              LoadTwoByteTarget::BC => self.registers.set_bc(source_value),
+              _ => { panic!("TODO: implement other targets") }
+            };
+            match source {
+              LoadTwoByteSource::D16 => self.pc.wrapping_add(3),
+              _                   => self.pc.wrapping_add(3),
             }
           }
           _ => { panic!("TODO: implement other load types") }

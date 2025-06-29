@@ -7,15 +7,24 @@ pub enum JumpTest {
 }
 
 pub enum LoadByteTarget {
-    A, B, C, D, E, H, L, HLI
+  A, B, C, D, E, H, L, HLI
 }
 
 pub enum LoadByteSource {
-    A, B, C, D, E, H, L, D8, HLI
+  A, B, C, D, E, H, L, D8, HLI
+}
+
+pub enum LoadTwoByteTarget {
+  BC
+}
+
+pub enum LoadTwoByteSource {
+  D16
 }
 
 pub enum LoadType {
   Byte(LoadByteTarget, LoadByteSource),
+  TwoByte(LoadTwoByteTarget, LoadTwoByteSource)
 }
 
 pub enum Instruction {
@@ -74,6 +83,7 @@ impl Instruction {
   fn from_byte_not_prefixed(byte: u8) -> Option<Instruction> {
     match byte {
       0x00 => Some(Instruction::NOP),
+      0x01 => Some(Instruction::LD(LoadType::TwoByte(LoadTwoByteTarget::BC, LoadTwoByteSource::D16))),
       0x02 => Some(Instruction::INC(IncDecTarget::BC)),
       0x03 => Some(Instruction::INC(IncDecTarget::BC)),
       0x04 => Some(Instruction::INC(IncDecTarget::B)),
