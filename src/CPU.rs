@@ -238,6 +238,7 @@ impl CPU {
     };
 
     self.pc = next_pc;
+    println!("{}", next_pc);
   }
 
   fn jump(&self, should_jump: bool) -> u16 {
@@ -283,5 +284,18 @@ impl CPU {
     // than the addition caused a carry from the lower nibble to the upper nibble.
     self.registers.f.half_carry = (self.registers.a & 0xF) + (value & 0xF) > 0xF;
     new_value
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn test_nop() {
+    let mut cpu = CPU::new();
+    cpu.bus.write_byte(0x00, 0x00); // NOP instruction
+    cpu.step();
+    assert_eq!(cpu.pc, 0x01);
   }
 }
