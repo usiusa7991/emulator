@@ -154,18 +154,8 @@ impl CPU {
       Instruction::INC(target) => {
         match target {
           IncDecTarget::B => {
-            let value = self.registers.b;
-            let new_value = value.overflowing_add(1);
-            if new_value.1 {
-              self.registers.f.carry = true;
-            }
-            if new_value.0 == 0 {
-              self.registers.f.zero = true;
-            }
-            if (((value & 0xF) + (0x01 & 0xF)) & 0x10) == 0x10 {
-              self.registers.f.half_carry = true;
-            }
-            self.registers.b = new_value.0;
+            let new_value = self.inc_8bit(self.registers.b);
+            self.registers.b = new_value;
             self.pc.wrapping_add(1)
           },
           IncDecTarget::BC => {
@@ -241,6 +231,16 @@ impl CPU {
     // together result in a value bigger than 0xF. If the result is larger than 0xF
     // than the addition caused a carry from the lower nibble to the upper nibble.
     self.registers.f.half_carry = (self.registers.a & 0xF) + (value & 0xF) > 0xF;
+    new_value
+  }
+
+  fn inc_8bit(&mut self, value: u8) -> u8 {
+    let new_value = value.wrapping_add(1);
+
+    self.registers.f.zero = new_value == 0;
+    self.registers.f.subtract = false;
+    self.registers.f.half_carry = (value & 0x0F) + 1 > 0x0F;
+
     new_value
   }
 }
