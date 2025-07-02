@@ -49,3 +49,21 @@ fn ld_bca_a() {
     assert_eq!(cpu.pc, 0x01); // PCは1進む
     assert_eq!(cpu.bus.read_byte(0x1234), 0xAB); // BCが指すアドレスにAの値が書き込まれたか
 }
+
+#[test]
+fn inc_bc() {
+    let mut cpu = CPU::new();
+
+    // レジスタの初期値を設定
+    cpu.registers.set_bc(0x1234);
+
+    // INC BC 命令 (0x03)
+    cpu.bus.write_byte(0x00, 0x03);
+
+    // 1命令実行
+    cpu.step();
+
+    // 結果を検証
+    assert_eq!(cpu.pc, 0x01); // PCは1進む
+    assert_eq!(cpu.registers.get_bc(), 0x1235); // BCレジスタの値が1増加したか
+}
