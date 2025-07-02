@@ -153,6 +153,21 @@ impl CPU {
       },
       Instruction::INC(target) => {
         match target {
+          IncDecTarget::B => {
+            let value = self.registers.b;
+            let new_value = value.overflowing_add(1);
+            if new_value.1 {
+              self.registers.f.carry = true;
+            }
+            if new_value.0 == 0 {
+              self.registers.f.zero = true;
+            }
+            if (((value & 0xF) + (0x01 & 0xF)) & 0x10) == 0x10 {
+              self.registers.f.half_carry = true;
+            }
+            self.registers.b = new_value.0;
+            self.pc.wrapping_add(1)
+          },
           IncDecTarget::BC => {
             let value = self.registers.get_bc();
             let new_value = value.wrapping_add(1);

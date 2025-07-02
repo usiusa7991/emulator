@@ -67,3 +67,35 @@ fn inc_bc() {
     assert_eq!(cpu.pc, 0x01); // PCは1進む
     assert_eq!(cpu.registers.get_bc(), 0x1235); // BCレジスタの値が1増加したか
 }
+
+#[test]
+fn inc_b() {
+    let mut cpu = CPU::new();
+
+    // 1. 通常のインクリメント
+    cpu.registers.b = 0x01;
+    cpu.bus.write_byte(0x00, 0x04); // INC B
+    cpu.step();
+    assert_eq!(cpu.registers.b, 0x02);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.half_carry);
+
+    // 2. ハーフキャリー
+    cpu.pc = 0;
+    cpu.registers.b = 0x0F;
+    cpu.bus.write_byte(0x00, 0x04); // INC B
+    cpu.step();
+    assert_eq!(cpu.registers.b, 0x10);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(cpu.registers.f.half_carry);
+
+    // 3. ゼロフラグ
+    cpu.pc = 0;
+    cpu.registers.b = 0xFF;
+    cpu.bus.write_byte(0x00, 0x04); // INC B
+    cpu.step();
+    assert_eq!(cpu.registers.b, 0x00);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(cpu.registers.f.zero);
+}
