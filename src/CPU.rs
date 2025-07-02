@@ -93,10 +93,12 @@ impl CPU {
             };
             match target {
               LoadByteTarget::A => self.registers.a = source_value,
+              LoadByteTarget::BC => self.registers.set_bc(source_value as u16),
               LoadByteTarget::HLI => self.bus.write_byte(self.registers.get_hl(), source_value),
               _ => { panic!("TODO: implement other targets") }
             };
             match source {
+              LoadByteSource::A  => self.pc.wrapping_add(1),
               LoadByteSource::D8  => self.pc.wrapping_add(2),
               _                   => self.pc.wrapping_add(1),
             }

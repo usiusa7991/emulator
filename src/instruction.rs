@@ -7,7 +7,7 @@ pub enum JumpTest {
 }
 
 pub enum LoadByteTarget {
-  A, B, C, D, E, H, L, HLI
+  A, B, C, D, E, H, L, BC, HLI
 }
 
 pub enum LoadByteSource {
@@ -84,7 +84,7 @@ impl Instruction {
     match byte {
       0x00 => Some(Instruction::NOP),
       0x01 => Some(Instruction::LD(LoadType::TwoByte(LoadTwoByteTarget::BC, LoadTwoByteSource::D16))),
-      0x02 => Some(Instruction::INC(IncDecTarget::BC)),
+      0x02 => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::BC, LoadByteSource::A))),
       0x03 => Some(Instruction::INC(IncDecTarget::BC)),
       0x04 => Some(Instruction::INC(IncDecTarget::B)),
       0x05 => Some(Instruction::DEC(IncDecTarget::B)),
