@@ -99,3 +99,35 @@ fn inc_b() {
     assert_eq!(cpu.pc, 0x01);
     assert!(cpu.registers.f.zero);
 }
+
+#[test]
+fn dec_b() {
+    let mut cpu = CPU::new();
+
+    // 1. 通常のデクリメント
+    cpu.registers.b = 0x02;
+    cpu.bus.write_byte(0x00, 0x05); // DEC B
+    cpu.step();
+    assert_eq!(cpu.registers.b, 0x01);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.half_carry);
+
+    // 2. ハーフキャリー発生（下位4ビットが0のとき）
+    cpu.pc = 0;
+    cpu.registers.b = 0x10;
+    cpu.bus.write_byte(0x00, 0x05); // DEC B
+    cpu.step();
+    assert_eq!(cpu.registers.b, 0x0F);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(cpu.registers.f.half_carry);
+
+    // 3. ゼロフラグ
+    cpu.pc = 0;
+    cpu.registers.b = 0x01;
+    cpu.bus.write_byte(0x00, 0x05); // DEC B
+    cpu.step();
+    assert_eq!(cpu.registers.b, 0x00);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(cpu.registers.f.zero);
+}
