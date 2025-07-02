@@ -30,3 +30,22 @@ fn ld_bc_d16() {
     assert_eq!(cpu.pc, 0x03); // プログラムカウンタは3進む
     assert_eq!(cpu.registers.get_bc(), 0x0305); // BCレジスタに値がロードされたか
 }
+
+#[test]
+fn ld_bca_a() {
+    let mut cpu = CPU::new();
+
+    // レジスタの初期値を設定
+    cpu.registers.a = 0xAB; // Aレジスタにテスト用の値を設定
+    cpu.registers.set_bc(0x1234); // BCレジスタにメモリアドレスを設定
+
+    // LD (BC), A 命令 (0x02)
+    cpu.bus.write_byte(0x00, 0x02);
+
+    // 1命令実行
+    cpu.step();
+
+    // 結果を検証
+    assert_eq!(cpu.pc, 0x01); // PCは1進む
+    assert_eq!(cpu.bus.read_byte(0x1234), 0xAB); // BCが指すアドレスにAの値が書き込まれたか
+}
