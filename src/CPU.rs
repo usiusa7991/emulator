@@ -171,12 +171,7 @@ impl CPU {
         match target {
           IncDecTarget::B => {
             let value  = self.registers.b;
-            let new_value = value.wrapping_sub(1);
-            if new_value == 0 {
-              self.registers.f.zero = true;
-            }
-            self.registers.f.subtract = true;
-            self.registers.f.half_carry = (value & 0x0F) + 1 > 0x0F;
+            let new_value = self.dec_8bit(value);
             self.registers.b = new_value;
             self.pc.wrapping_add(1)
           },
@@ -256,6 +251,16 @@ impl CPU {
     self.registers.f.zero = new_value == 0;
     self.registers.f.subtract = false;
     self.registers.f.half_carry = (value & 0x0F) + 1 > 0x0F;
+
+    new_value
+  }
+
+  fn dec_8bit(&mut self, value: u8) -> u8 {
+    let new_value = value.wrapping_sub(1);
+
+    self.registers.f.zero = new_value == 0;
+    self.registers.f.subtract = true;
+    self.registers.f.half_carry = (value & 0x0F) == 0;
 
     new_value
   }
