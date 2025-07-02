@@ -131,3 +131,19 @@ fn dec_b() {
     assert_eq!(cpu.pc, 0x01);
     assert!(cpu.registers.f.zero);
 }
+
+#[test]
+fn ld_b_d8() {
+    let mut cpu = CPU::new();
+
+    // LD B, 0x08 命令
+    // 0x06: LD B, d8 のオペコード
+    // 0x08: 即値データ
+    cpu.bus.write_byte(0x00, 0x06); // LD B, d8
+    cpu.bus.write_byte(0x01, 0x08); // d8 = 0x08
+
+    cpu.step();
+
+    assert_eq!(cpu.registers.b, 0x08);
+    assert_eq!(cpu.pc, 0x02);
+}
