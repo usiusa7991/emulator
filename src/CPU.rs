@@ -166,7 +166,23 @@ impl CPU {
           },
           _ => { panic!("TODO: support more targets") }
         }
-      }
+      },
+      Instruction::DEC(target) => {
+        match target {
+          IncDecTarget::B => {
+            let value  = self.registers.b;
+            let new_value = value.wrapping_sub(1);
+            if new_value == 0 {
+              self.registers.f.zero = true;
+            }
+            self.registers.f.subtract = true;
+            self.registers.f.half_carry = (value & 0x0F) + 1 > 0x0F;
+            self.registers.b = new_value;
+            self.pc.wrapping_add(1)
+          },
+          _ => { panic!("TODO: support more targets") }
+        }
+      },
       _ => { /* TODO: support more instructions */ self.pc }
     }
   }
