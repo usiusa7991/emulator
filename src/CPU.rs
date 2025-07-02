@@ -17,8 +17,8 @@ impl MemoryBus {
     MemoryBus { memory: [0; 0x10000] }
   }
 
-  fn read_byte(&self, address: u16) -> u8 {
-    self.memory[address as usize]
+  pub fn read_byte(  fn read_byte(&self, address: u16) -> u8 {
+ess as usize]
   }
 
   pub fn write_byte(&mut self, address: u16, value: u8) {
@@ -138,18 +138,29 @@ impl CPU {
         self.pc.wrapping_add(1)
       },
       Instruction::CALL(test) => {
-          let jump_condition = match test {
-              JumpTest::NotZero => !self.registers.f.zero,
-              _ => { panic!("TODO: support more conditions") }
-          };
-          self.call(jump_condition)
+        let jump_condition = match test {
+            JumpTest::NotZero => !self.registers.f.zero,
+            _ => { panic!("TODO: support more conditions") }
+        };
+        self.call(jump_condition)
       },
       Instruction::RET(test) => {
-          let jump_condition = match test {
-              JumpTest::NotZero => !self.registers.f.zero,
-              _ => { panic!("TODO: support more conditions") }
-          };
-          self.return_(jump_condition)
+        let jump_condition = match test {
+            JumpTest::NotZero => !self.registers.f.zero,
+            _ => { panic!("TODO: support more conditions") }
+        };
+        self.return_(jump_condition)
+      },
+      Instruction::INC(target) => {
+        match target {
+          IncDecTarget::BC => {
+            let value = self.registers.get_bc();
+            let new_value = value.wrapping_add(1);
+            self.registers.set_bc(new_value);
+            self.pc.wrapping_add(1)
+          },
+          _ => { panic!("TODO: support more targets") }
+        }
       }
       _ => { /* TODO: support more instructions */ self.pc }
     }
