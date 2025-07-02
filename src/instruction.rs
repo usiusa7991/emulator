@@ -42,19 +42,19 @@ pub enum Instruction {
 }
 
 pub enum ArithmeticTarget {
-    A, B, C, D, E, H, L, D8, HLI
+	A, B, C, D, E, H, L, D8, HLI
 }
 
 pub enum IncDecTarget {
-    A, B, C, D, E, H, L, HLI, BC, DE, HL, SP
+	A, B, C, D, E, H, L, HLI, BC, DE, HL, SP
 }
 
 pub enum PrefixTarget {
-    A, B, C, D, E, H, L, HLI
+	A, B, C, D, E, H, L, HLI
 }
 
 pub enum StackTarget {
-    AF, BC, DE, HL
+	AF, BC, DE, HL
 }
 
 impl Instruction {
