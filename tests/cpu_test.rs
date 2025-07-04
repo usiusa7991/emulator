@@ -147,3 +147,30 @@ fn ld_b_d8() {
     assert_eq!(cpu.registers.b, 0x08);
     assert_eq!(cpu.pc, 0x02);
 }
+
+#[test]
+fn rlca() {
+    let mut cpu = CPU::new();
+
+    // 1. キャリーが発生するケース (MSBが1)
+    cpu.registers.a = 0b1000_0001;
+    cpu.bus.write_byte(0x00, 0x07); // RLCA
+    cpu.step();
+
+    assert_eq!(cpu.registers.a, 0b0000_0011);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(cpu.registers.f.carry);
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+
+    // 2. キャリーが発生しないケース (MSBが0)
+    cpu.pc = 0; // PCをリセット
+    cpu.registers.a = 0b0100_0010;
+    cpu.bus.write_byte(0x00, 0x07); // RLCA
+    cpu.step();
+
+    assert_eq!(cpu.registers.a, 0b1000_0100);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(!cpu.registers.f.carry);
+}
