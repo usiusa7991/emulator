@@ -174,3 +174,31 @@ fn rlca() {
     assert_eq!(cpu.pc, 0x01);
     assert!(!cpu.registers.f.carry);
 }
+
+#[test]
+fn ld_a16_sp() {
+    let mut cpu = CPU::new();
+
+    // SPにテスト用の値をセット
+    cpu.sp = 0xBEEF;
+
+    // LD (0x1234), SP 命令
+    // 0x08: LD (a16), SP のオペコード
+    // 0x34: アドレス下位バイト
+    // 0x12: アドレス上位バイト
+    let program = vec![0x08, 0x34, 0x12];
+
+    // プログラムをメモリに書き込む
+    for (i, &byte) in program.iter().enumerate() {
+        cpu.bus.write_byte(i as u16, byte);
+    }
+
+    // 1命令実行
+    cpu.step();
+
+    // 結果を検証
+    // 0x1234にSPの下位バイト、0x1235にSPの上位バイトが書き込まれているはず
+    assert_eq!(cpu.bus.read_byte(0x1234), 0xEF); // LSB
+    assert_eq!(cpu.bus.read_byte(0x1235), 0xBE); // MSB
+    assert_eq!(cpu.pc, 0x03); // PCは3進む
+}
