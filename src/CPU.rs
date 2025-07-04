@@ -4,7 +4,7 @@ use crate::instruction::*;
 pub struct CPU {
   pub registers: Registers,
   pub pc: u16,
-  sp: u16,
+  pub sp: u16,
   pub bus: MemoryBus,
 }
 
@@ -108,14 +108,23 @@ impl CPU {
             let source_value = match source {
               LoadTwoByteSource::D16 => self.bus.read_byte(self.pc + 1) as u16
                 | (self.bus.read_byte(self.pc + 2) as u16) << 8,
+              LoadTwoByteSource::SP => self.sp,
               _ => { panic!("TODO: implement other sources") }
             };
             match target {
               LoadTwoByteTarget::BC => self.registers.set_bc(source_value),
+              LoadTwoByteTarget::A16 => {
+                let address = self.bus.read_byte(self.pc + 1) as u16
+                | (self.bus.read_byte(self.pc + 2) as u16) << 8;
+
+                self.bus.write_byte(address, (source_value & 0xFF) as u8);
+                self.bus.write_byte(address + 1, (source_value >> 8) as u8);
+              },
               _ => { panic!("TODO: implement other targets") }
             };
             match source {
               LoadTwoByteSource::D16 => self.pc.wrapping_add(3),
+              LoadTwoByteSource::SP => self.pc.wrapping_add(3),
               _                   => self.pc.wrapping_add(3),
             }
           }
