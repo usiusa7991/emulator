@@ -39,6 +39,7 @@ pub enum Instruction {
   DEC(IncDecTarget),
   JP(JumpTest),
   LD(LoadType),
+  RLCA,
 }
 
 pub enum ArithmeticTarget {
