@@ -179,7 +179,6 @@ impl CPU {
           _ => { panic!("TODO: support more targets") }
         }
       },
-      _ => { /* TODO: support more instructions */ self.pc },
       Instruction::RLCA => {
         let value = self.registers.a;
         let seventh_bit = value >> 7;
@@ -190,7 +189,8 @@ impl CPU {
         self.registers.f.half_carry = false;
         self.registers.f.carry = seventh_bit != 0;
         self.pc.wrapping_add(1)
-      }
+      },
+      _ => { /* TODO: support more instructions */ self.pc },
     }
   }
 
