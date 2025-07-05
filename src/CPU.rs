@@ -121,11 +121,7 @@ impl CPU {
               },
               _ => { panic!("TODO: implement other targets") }
             };
-            match source {
-              LoadTwoByteSource::D16 => self.pc.wrapping_add(3),
-              LoadTwoByteSource::SP => self.pc.wrapping_add(3),
-              _                   => self.pc.wrapping_add(3),
-            }
+            self.pc.wrapping_add(3)
           }
           _ => { panic!("TODO: implement other load types") }
         }
