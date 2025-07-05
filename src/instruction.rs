@@ -98,6 +98,7 @@ impl Instruction {
       0x08 => Some(Instruction::LD(LoadType::TwoByte(LoadTwoByteTarget::A16, LoadTwoByteSource::SP))),
       0x09 => Some(Instruction::ADD(AddTarget::HL, AddSource::BC)),
       0x0A => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::A, LoadByteSource::BCI))),
+      0x0B => Some(Instruction::DEC(IncDecTarget::BC)),
       _ => None
     }
   }
