@@ -296,3 +296,19 @@ fn dec_c() {
     assert_eq!(cpu.registers.c, 0x41);
     assert_eq!(cpu.pc, 0x01);
 }
+
+#[test]
+fn ld_c_d8() {
+    let mut cpu = CPU::new();
+    
+    // LD C, 0x42 命令
+    cpu.bus.write_byte(0x00, 0x0E); // LD C, d8
+    cpu.bus.write_byte(0x01, 0x42); // d8 = 0x42
+    
+    // 実行
+    cpu.step();
+    
+    // 結果を検証
+    assert_eq!(cpu.registers.c, 0x42);
+    assert_eq!(cpu.pc, 0x02);
+}
