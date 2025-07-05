@@ -1026,7 +1026,6 @@ fn daa() {
 
     // 6. 減算後の調整 - carryフラグがある場合
     // DAAの仕様では、減算時にcarryフラグが立っている場合は0x60を引く
-    // この場合、carryフラグは保持される（新しいキャリーは発生しない）
     cpu.pc = 0;
     cpu.registers.a = 0x45;
     cpu.registers.f.subtract = true;
@@ -1040,7 +1039,7 @@ fn daa() {
     assert!(!cpu.registers.f.zero);
     assert!(cpu.registers.f.subtract);
     assert!(!cpu.registers.f.half_carry);
-    assert!(cpu.registers.f.carry); // 保持される - DAAは既存のcarryフラグを変更しない
+    assert!(cpu.registers.f.carry); // 保持される - 最終的なBCDの値 = 0xE5 > 0x99 であるため
 
     // 7. 結果が0になる場合
     cpu.pc = 0;
