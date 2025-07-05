@@ -101,7 +101,6 @@ impl CPU {
               _ => { panic!("TODO: implement other targets") }
             };
             match source {
-              LoadByteSource::A  => self.pc.wrapping_add(1),
               LoadByteSource::D8  => self.pc.wrapping_add(2),
               _                   => self.pc.wrapping_add(1),
             }
