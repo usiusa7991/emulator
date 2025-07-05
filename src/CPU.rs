@@ -184,6 +184,10 @@ impl CPU {
             let new_value = self.inc_8bit(self.registers.d);
             self.registers.d = new_value;
           },
+          IncDecTarget::E => {
+            let new_value = self.inc_8bit(self.registers.e);
+            self.registers.e = new_value;
+          },
           IncDecTarget::BC => {
             let value = self.registers.get_bc();
             let new_value = value.wrapping_add(1);

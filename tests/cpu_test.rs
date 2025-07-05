@@ -634,3 +634,35 @@ fn dec_de() {
     // 0x0000 - 1 = 0xFFFF
     assert_eq!(cpu.registers.get_de(), 0xFFFF);
 }
+
+#[test]
+fn inc_e() {
+    let mut cpu = CPU::new();
+
+    // 1. 通常のインクリメント
+    cpu.registers.e = 0x01;
+    cpu.bus.write_byte(0x00, 0x1C); // INC E
+    cpu.step();
+    assert_eq!(cpu.registers.e, 0x02);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.half_carry);
+
+    // 2. ハーフキャリー
+    cpu.pc = 0;
+    cpu.registers.e = 0x0F;
+    cpu.bus.write_byte(0x00, 0x1C); // INC E
+    cpu.step();
+    assert_eq!(cpu.registers.e, 0x10);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(cpu.registers.f.half_carry);
+
+    // 3. ゼロフラグ
+    cpu.pc = 0;
+    cpu.registers.e = 0xFF;
+    cpu.bus.write_byte(0x00, 0x1C); // INC E
+    cpu.step();
+    assert_eq!(cpu.registers.e, 0x00);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(cpu.registers.f.zero);
+}
