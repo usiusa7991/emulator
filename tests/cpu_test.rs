@@ -750,7 +750,7 @@ fn rra() {
     assert!(!cpu.registers.f.carry);
 
     // 3. 結果が0になる場合
-    cpu.pc = 0;
+    cpu.pc = 0; // PCをリセット
     cpu.registers.a = 0b0000_0000;
     cpu.registers.f.carry = false;
     cpu.bus.write_byte(0x00, 0x1F); // RRA
@@ -786,4 +786,22 @@ fn jr_nz_s8() {
 
     // PC = 0x200 + 2 = 0x202
     assert_eq!(cpu.pc, 0x202);
+}
+
+#[test]
+fn ld_hl_d16() {
+    let mut cpu = CPU::new();
+
+    // LD HL, 0x1234 命令
+    // 0x21: LD HL, d16 のオペコード
+    // 0x34: 下位バイト
+    // 0x12: 上位バイト
+    cpu.bus.write_byte(0x00, 0x21); // LD HL, d16
+    cpu.bus.write_byte(0x01, 0x34); // d16 LSB
+    cpu.bus.write_byte(0x02, 0x12); // d16 MSB
+
+    cpu.step();
+
+    assert_eq!(cpu.registers.get_hl(), 0x1234);
+    assert_eq!(cpu.pc, 0x03);
 }

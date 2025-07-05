@@ -136,6 +136,7 @@ impl CPU {
             match target {
               LoadTwoByteTarget::BC => self.registers.set_bc(source_value),
               LoadTwoByteTarget::DE => self.registers.set_de(source_value),
+              LoadTwoByteTarget::HL => self.registers.set_hl(source_value),
               LoadTwoByteTarget::A16 => {
                 let address = self.read_immediate_16bit();
 
