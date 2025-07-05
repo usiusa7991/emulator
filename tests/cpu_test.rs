@@ -221,3 +221,24 @@ fn add_hl_bc() {
     assert_eq!(cpu.registers.get_hl(), 0x3000);
     assert_eq!(cpu.pc, 0x01);
 }
+
+#[test]
+fn ld_a_bci() {
+    let mut cpu = CPU::new();
+    
+    // BCレジスタにアドレスを設定
+    cpu.registers.set_bc(0x1234);
+    
+    // そのアドレスにテスト値を書き込み
+    cpu.bus.write_byte(0x1234, 0xAB);
+    
+    // LD A, (BC) 命令 (0x0A)
+    cpu.bus.write_byte(0x00, 0x0A);
+    
+    // 実行
+    cpu.step();
+    
+    // 結果を検証
+    assert_eq!(cpu.registers.a, 0xAB);
+    assert_eq!(cpu.pc, 0x01);
+}
