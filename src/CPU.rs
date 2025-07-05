@@ -261,6 +261,15 @@ impl CPU {
         self.set_rotation_flags(new_value, seventh_bit);
         self.pc.wrapping_add(1)
       },
+      Instruction::RRA => {
+        let value = self.registers.a;
+        let zero_bit = value & 1;
+        let carry_flag = self.registers.f.carry as u8;
+        let new_value = (value >> 1) | carry_flag << 7;
+        self.registers.a = new_value;
+        self.set_rotation_flags(1, zero_bit);
+        self.pc.wrapping_add(1)
+      }
 
       _ => { /* TODO: support more instructions */ self.pc },
     }

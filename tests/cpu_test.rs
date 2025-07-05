@@ -717,3 +717,46 @@ fn ld_e_d8() {
     assert_eq!(cpu.registers.e, 0x42);
     assert_eq!(cpu.pc, 0x02);
 }
+
+#[test]
+fn rra() {
+    let mut cpu = CPU::new();
+
+    // 1. キャリーが立っていない場合
+    cpu.registers.a = 0b1000_0001;
+    cpu.registers.f.carry = false;
+    cpu.bus.write_byte(0x00, 0x1F); // RRA
+    cpu.step();
+
+    // 0b1000_0001 >> 1 = 0b0100_0000, キャリーイン=0, new_value=0b0100_0000
+    assert_eq!(cpu.registers.a, 0b0100_0000);
+    // Cフラグは元のAのビット0（1）なのでtrue
+    assert!(cpu.registers.f.carry);
+    // Z, N, Hは常にfalse
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+
+    // 2. キャリーが立っている場合
+    cpu.pc = 0;
+    cpu.registers.a = 0b0000_0010;
+    cpu.registers.f.carry = true;
+    cpu.bus.write_byte(0x00, 0x1F); // RRA
+    cpu.step();
+
+    // 0b0000_0010 >> 1 = 0b0000_0001, キャリーイン=1, new_value=0b1000_0001
+    assert_eq!(cpu.registers.a, 0b1000_0001);
+    // Cフラグは元のAのビット0（0）なのでfalse
+    assert!(!cpu.registers.f.carry);
+
+    // 3. 結果が0になる場合
+    cpu.pc = 0;
+    cpu.registers.a = 0b0000_0000;
+    cpu.registers.f.carry = false;
+    cpu.bus.write_byte(0x00, 0x1F); // RRA
+    cpu.step();
+
+    assert_eq!(cpu.registers.a, 0b0000_0000);
+    assert!(!cpu.registers.f.carry);
+    assert!(!cpu.registers.f.zero);
+}
