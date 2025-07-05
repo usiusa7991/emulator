@@ -805,3 +805,24 @@ fn ld_hl_d16() {
     assert_eq!(cpu.registers.get_hl(), 0x1234);
     assert_eq!(cpu.pc, 0x03);
 }
+
+#[test]
+fn ld_hlp_a() {
+    let mut cpu = CPU::new();
+
+    // HL = 0x1234, A = 0xAB
+    cpu.registers.set_hl(0x1234);
+    cpu.registers.a = 0xAB;
+
+    // LD (HL+), A 命令 (0x22)
+    cpu.bus.write_byte(0x00, 0x22);
+
+    cpu.step();
+
+    // HLの指すアドレスにAの値が書き込まれている
+    assert_eq!(cpu.bus.read_byte(0x1234), 0xAB);
+    // HLが+1されている
+    assert_eq!(cpu.registers.get_hl(), 0x1235);
+    // PCは1進む
+    assert_eq!(cpu.pc, 0x01);
+}
