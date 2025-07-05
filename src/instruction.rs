@@ -40,6 +40,7 @@ pub enum Instruction {
   JP(JumpTest),
   LD(LoadType),
   RLCA,
+  RRCA,
 }
 
 pub enum AddTarget {
@@ -102,6 +103,7 @@ impl Instruction {
       0x0C => Some(Instruction::INC(IncDecTarget::C)),
       0x0D => Some(Instruction::DEC(IncDecTarget::C)),
       0x0E => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::C, LoadByteSource::D8))),
+      0x0F => Some(Instruction::RRCA),
       _ => None
     }
   }

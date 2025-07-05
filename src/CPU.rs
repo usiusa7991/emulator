@@ -206,6 +206,17 @@ impl CPU {
         self.registers.f.carry = seventh_bit != 0;
         self.pc.wrapping_add(1)
       },
+      Instruction::RRCA => {
+        let value = self.registers.a;
+        let zeroth_bit = value & 1;
+        let new_value = (zeroth_bit << 7) | (value >> 1);
+        self.registers.a = new_value;
+        self.registers.f.zero = false;
+        self.registers.f.subtract = false;
+        self.registers.f.half_carry = false;
+        self.registers.f.carry = zeroth_bit != 0;
+        self.pc.wrapping_add(1)
+      },
       _ => { /* TODO: support more instructions */ self.pc },
     }
   }

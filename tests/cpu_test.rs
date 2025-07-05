@@ -312,3 +312,35 @@ fn ld_c_d8() {
     assert_eq!(cpu.registers.c, 0x42);
     assert_eq!(cpu.pc, 0x02);
 }
+
+#[test]
+fn rrca() {
+    let mut cpu = CPU::new();
+    
+    // 1. 最下位ビットが1の場合（キャリーが発生）
+    cpu.registers.a = 0b0000_0001;
+    cpu.bus.write_byte(0x00, 0x0F); // RRCA
+    
+    cpu.step();
+    
+    assert_eq!(cpu.registers.a, 0b1000_0000); // 最下位ビットが最上位に移動
+    assert!(cpu.registers.f.carry); // キャリーフラグが設定される
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+    assert_eq!(cpu.pc, 0x01);
+    
+    // 2. 最下位ビットが0の場合（キャリーが発生しない）
+    cpu.pc = 0; // PCをリセット
+    cpu.registers.a = 0b0000_0010;
+    cpu.bus.write_byte(0x00, 0x0F); // RRCA
+    
+    cpu.step();
+    
+    assert_eq!(cpu.registers.a, 0b0000_0001); // 右に1ビットシフト
+    assert!(!cpu.registers.f.carry); // キャリーフラグがクリアされる
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+    assert_eq!(cpu.pc, 0x01);
+}
