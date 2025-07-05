@@ -400,3 +400,16 @@ fn inc_d() {
     assert_eq!(cpu.registers.d, 0x43);
     assert_eq!(cpu.pc, 0x01);
 }
+
+#[test]
+fn dec_d() {
+    let mut cpu = CPU::new();
+    cpu.registers.d = 0x42;
+
+    cpu.bus.write_byte(0x00, 0x15); // DEC D
+
+    cpu.step();
+
+    assert_eq!(cpu.registers.d, 0x41);
+    assert_eq!(cpu.pc, 0x01);
+}
