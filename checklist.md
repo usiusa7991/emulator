@@ -36,14 +36,14 @@
 - [x] 1F RRA
 
 #### 20–2F
-- [ ] 20 JR NZ,r8
-- [ ] 21 LD HL,d16
-- [ ] 22 LD (HL+),A
-- [ ] 23 INC HL
-- [ ] 24 INC H
-- [ ] 25 DEC H
-- [ ] 26 LD H,d8
-- [ ] 27 DAA
+- [x] 20 JR NZ,r8
+- [x] 21 LD HL,d16
+- [x] 22 LD (HL+),A
+- [x] 23 INC HL
+- [x] 24 INC H
+- [x] 25 DEC H
+- [x] 26 LD H,d8
+- [x] 27 DAA
 - [ ] 28 JR Z,r8
 - [ ] 29 ADD HL,HL
 - [ ] 2A LD A,(HL+)
