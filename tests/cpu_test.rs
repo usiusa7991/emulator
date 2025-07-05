@@ -760,3 +760,30 @@ fn rra() {
     assert!(!cpu.registers.f.carry);
     assert!(!cpu.registers.f.zero);
 }
+
+#[test]
+fn jr_nz_s8() {
+    let mut cpu = CPU::new();
+
+    // Zeroフラグが0（ジャンプする場合）
+    cpu.registers.f.zero = false;
+    cpu.pc = 0x100;
+    cpu.bus.write_byte(0x100, 0x20); // JR NZ, s8
+    cpu.bus.write_byte(0x101, 0x05); // +5
+
+    cpu.step();
+
+    // PC = 0x100 + 2 + 5 = 0x107
+    assert_eq!(cpu.pc, 0x107);
+
+    // Zeroフラグが1（ジャンプしない場合）
+    cpu.registers.f.zero = true;
+    cpu.pc = 0x200;
+    cpu.bus.write_byte(0x200, 0x20); // JR NZ, s8
+    cpu.bus.write_byte(0x201, 0x05); // +5
+
+    cpu.step();
+
+    // PC = 0x200 + 2 = 0x202
+    assert_eq!(cpu.pc, 0x202);
+}

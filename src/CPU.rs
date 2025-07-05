@@ -85,12 +85,20 @@ impl CPU {
       },
       Instruction::JR(conditions) => {
         let skip_counts = self.read_next_byte() as i8;
-        match conditions {
+        let condition_flag = match conditions {
           JumpRelativeConditions::Always => {
+            true
+          },
+          JumpRelativeConditions::NoZeroFlag => {
+            self.registers.f.zero == false
           }
-        }
+        };
 
-        (((self.pc.wrapping_add(2)) as i32).wrapping_add(skip_counts as i32)) as u16
+        if condition_flag {
+          (((self.pc.wrapping_add(2)) as i32).wrapping_add(skip_counts as i32)) as u16
+        } else {
+          self.pc.wrapping_add(2)
+        }
       },
       Instruction::LD(load_type) => {
         match load_type {
