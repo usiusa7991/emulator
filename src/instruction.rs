@@ -99,6 +99,7 @@ impl Instruction {
       0x09 => Some(Instruction::ADD(AddTarget::HL, AddSource::BC)),
       0x0A => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::A, LoadByteSource::BCI))),
       0x0B => Some(Instruction::DEC(IncDecTarget::BC)),
+      0x0C => Some(Instruction::INC(IncDecTarget::C)),
       _ => None
     }
   }

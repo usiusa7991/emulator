@@ -260,3 +260,21 @@ fn dec_bc() {
     assert_eq!(cpu.registers.get_bc(), 0x1233);
     assert_eq!(cpu.pc, 0x01);
 }
+
+#[test]
+fn inc_c() {
+    let mut cpu = CPU::new();
+    
+    // 初期値を設定
+    cpu.registers.c = 0x42;
+    
+    // INC C 命令 (0x0C)
+    cpu.bus.write_byte(0x00, 0x0C);
+    
+    // 実行
+    cpu.step();
+    
+    // 結果を検証
+    assert_eq!(cpu.registers.c, 0x43);
+    assert_eq!(cpu.pc, 0x01);
+}
