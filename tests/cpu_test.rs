@@ -189,7 +189,7 @@ fn rlca() {
     assert_eq!(cpu.registers.a, 0b0000_0000);
     assert_eq!(cpu.pc, 0x01);
     assert!(!cpu.registers.f.carry);
-    assert!(cpu.registers.f.zero); // ゼロフラグが立つ
+    assert!(!cpu.registers.f.zero); // ゼロフラグが立たない
     assert!(!cpu.registers.f.subtract);
     assert!(!cpu.registers.f.half_carry);
 }
@@ -373,7 +373,7 @@ fn rrca() {
     assert_eq!(cpu.registers.a, 0b0000_0000);
     assert_eq!(cpu.pc, 0x01);
     assert!(!cpu.registers.f.carry);
-    assert!(cpu.registers.f.zero); // ゼロフラグが立つ
+    assert!(!cpu.registers.f.zero); // ゼロフラグが立たない
     assert!(!cpu.registers.f.subtract);
     assert!(!cpu.registers.f.half_carry);
 }
@@ -469,7 +469,7 @@ fn rla() {
     
     assert_eq!(cpu.registers.a, 0b0000_0000); // 左シフト + キャリー
     assert!(cpu.registers.f.carry); // キャリーフラグが設定される
-    assert!(cpu.registers.f.zero); // 結果が0なのでゼロフラグが立つ
+    assert!(!cpu.registers.f.zero); // 結果が0でもゼロフラグは立たない
     assert!(!cpu.registers.f.subtract);
     assert!(!cpu.registers.f.half_carry);
     assert_eq!(cpu.pc, 0x01);
@@ -500,7 +500,7 @@ fn rla() {
     assert_eq!(cpu.registers.a, 0b0000_0000);
     assert_eq!(cpu.pc, 0x01);
     assert!(!cpu.registers.f.carry);
-    assert!(cpu.registers.f.zero); // ゼロフラグが立つ
+    assert!(!cpu.registers.f.zero); // ゼロフラグがタタナイ
     assert!(!cpu.registers.f.subtract);
     assert!(!cpu.registers.f.half_carry);
 }

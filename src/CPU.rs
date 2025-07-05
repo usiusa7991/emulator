@@ -242,7 +242,7 @@ impl CPU {
         let seventh_bit = value >> 7;
         let new_value = (value << 1) | seventh_bit;
         self.registers.a = new_value;
-        self.set_rotation_flags(new_value, seventh_bit);
+        self.set_rotation_flags(seventh_bit);
         self.pc.wrapping_add(1)
       },
       Instruction::RRCA => {
@@ -250,7 +250,7 @@ impl CPU {
         let zeroth_bit = value & 1;
         let new_value = (zeroth_bit << 7) | (value >> 1);
         self.registers.a = new_value;
-        self.set_rotation_flags(new_value, zeroth_bit);
+        self.set_rotation_flags(zeroth_bit);
         self.pc.wrapping_add(1)
       },
       Instruction::RLA => {
@@ -258,7 +258,7 @@ impl CPU {
         let seventh_bit = value >> 7;
         let new_value = (value << 1) | self.registers.f.carry as u8;
         self.registers.a = new_value;
-        self.set_rotation_flags(new_value, seventh_bit);
+        self.set_rotation_flags(seventh_bit);
         self.pc.wrapping_add(1)
       },
       Instruction::RRA => {
@@ -267,7 +267,7 @@ impl CPU {
         let carry_flag = self.registers.f.carry as u8;
         let new_value = (value >> 1) | carry_flag << 7;
         self.registers.a = new_value;
-        self.set_rotation_flags(1, zero_bit);
+        self.set_rotation_flags(zero_bit);
         self.pc.wrapping_add(1)
       }
 
@@ -369,9 +369,9 @@ impl CPU {
     self.bus.read_byte(self.pc + 1) as u16 | (self.bus.read_byte(self.pc + 2) as u16) << 8
   }
 
-  fn set_rotation_flags(&mut self, new_value: u8, carry: u8) {
+  fn set_rotation_flags(&mut self, carry: u8) {
     self.registers.set_f(
-        Some(new_value == 0),
+        Some(false),
         Some(false),
         Some(false),
         Some(carry != 0)
