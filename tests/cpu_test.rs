@@ -360,3 +360,17 @@ fn ld_de_d16() {
     assert_eq!(cpu.registers.get_de(), 0x1234);
     assert_eq!(cpu.pc, 0x03);
 }
+
+#[test]
+fn ld_dei_a() {
+    let mut cpu = CPU::new();
+    cpu.registers.a = 0xAB;
+    cpu.registers.set_de(0x1234);
+
+    cpu.bus.write_byte(0x00, 0x12); // LD (DE), A
+
+    cpu.step();
+
+    assert_eq!(cpu.bus.read_byte(0x1234), 0xAB);
+    assert_eq!(cpu.pc, 0x01);
+}

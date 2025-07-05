@@ -7,7 +7,7 @@ pub enum JumpTest {
 }
 
 pub enum LoadByteTarget {
-  A, B, C, D, E, H, L, BCI, HLI
+  A, B, C, D, E, H, L, BCI, DEI, HLI
 }
 
 pub enum LoadByteSource {
@@ -105,6 +105,7 @@ impl Instruction {
       0x0E => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::C, LoadByteSource::D8))),
       0x0F => Some(Instruction::RRCA),
       0x11 => Some(Instruction::LD(LoadType::TwoByte(LoadTwoByteTarget::DE, LoadTwoByteSource::D16))),
+      0x12 => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::DEI, LoadByteSource::A))),
       _ => None
     }
   }
