@@ -284,7 +284,7 @@ impl CPU {
   }
 
   fn dec_16bit(&mut self, value: u16) -> u16 {
-    let new_value = self.registers.set_bc(value - 1);
+    let new_value = self.registers.set_bc(value.wrapping_sub(1));
     self.pc.wrapping_add(1)
   }
 
