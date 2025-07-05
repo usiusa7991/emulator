@@ -100,6 +100,7 @@ impl Instruction {
       0x0A => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::A, LoadByteSource::BCI))),
       0x0B => Some(Instruction::DEC(IncDecTarget::BC)),
       0x0C => Some(Instruction::INC(IncDecTarget::C)),
+      0x0D => Some(Instruction::DEC(IncDecTarget::C)),
       _ => None
     }
   }
