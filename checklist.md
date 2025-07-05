@@ -19,21 +19,21 @@
 
 #### 10–1F
 - [ ] 10 STOP
-- [ ] 11 LD DE,d16
-- [ ] 12 LD (DE),A
-- [ ] 13 INC DE
-- [ ] 14 INC D
-- [ ] 15 DEC D
-- [ ] 16 LD D,d8
-- [ ] 17 RLA
-- [ ] 18 JR r8
-- [ ] 19 ADD HL,DE
-- [ ] 1A LD A,(DE)
-- [ ] 1B DEC DE
-- [ ] 1C INC E
-- [ ] 1D DEC E
-- [ ] 1E LD E,d8
-- [ ] 1F RRA
+- [x] 11 LD DE,d16
+- [x] 12 LD (DE),A
+- [x] 13 INC DE
+- [x] 14 INC D
+- [x] 15 DEC D
+- [x] 16 LD D,d8
+- [x] 17 RLA
+- [x] 18 JR r8
+- [x] 19 ADD HL,DE
+- [x] 1A LD A,(DE)
+- [x] 1B DEC DE
+- [x] 1C INC E
+- [x] 1D DEC E
+- [x] 1E LD E,d8
+- [x] 1F RRA
 
 #### 20–2F
 - [ ] 20 JR NZ,r8
