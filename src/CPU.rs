@@ -165,21 +165,19 @@ impl CPU {
           IncDecTarget::B => {
             let new_value = self.inc_8bit(self.registers.b);
             self.registers.b = new_value;
-            self.pc.wrapping_add(1)
           },
           IncDecTarget::C => {
             let new_value = self.inc_8bit(self.registers.c);
             self.registers.c = new_value;
-            self.pc.wrapping_add(1)
           },
           IncDecTarget::BC => {
             let value = self.registers.get_bc();
             let new_value = value.wrapping_add(1);
             self.registers.set_bc(new_value);
-            self.pc.wrapping_add(1)
           },
           _ => { panic!("TODO: support more targets") }
         }
+        self.pc.wrapping_add(1)
       },
       Instruction::DEC(target) => {
         match target {
