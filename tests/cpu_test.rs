@@ -504,3 +504,48 @@ fn rla() {
     assert!(!cpu.registers.f.subtract);
     assert!(!cpu.registers.f.half_carry);
 }
+
+#[test]
+fn jr_s8() {
+    let mut cpu = CPU::new();
+
+    // 1. 正のオフセット（前方ジャンプ）
+    // JR +5 命令: 0x18 (JR) + 0x05 (オフセット)
+    cpu.bus.write_byte(0x00, 0x18); // JR命令
+    cpu.bus.write_byte(0x01, 0x05); // +5のオフセット
+
+    cpu.step();
+
+    // PC = 0x00 + 2 + 5 = 0x07
+    assert_eq!(cpu.pc, 0x07);
+
+    // 2. 負のオフセット（後方ジャンプ）
+    cpu.pc = 0x100; // PCを0x100に設定
+    cpu.bus.write_byte(0x100, 0x18); // JR命令
+    cpu.bus.write_byte(0x101, 0xFE); // -2のオフセット (0xFE as i8 = -2)
+
+    cpu.step();
+
+    // PC = 0x100 + 2 + (-2) = 0x100
+    assert_eq!(cpu.pc, 0x100);
+
+    // 3. 大きな正のオフセット
+    cpu.pc = 0x200;
+    cpu.bus.write_byte(0x200, 0x18); // JR命令
+    cpu.bus.write_byte(0x201, 0x7F); // +127のオフセット
+
+    cpu.step();
+
+    // PC = 0x200 + 2 + 127 = 0x281
+    assert_eq!(cpu.pc, 0x281);
+
+    // 4. 大きな負のオフセット
+    cpu.pc = 0x300;
+    cpu.bus.write_byte(0x300, 0x18); // JR命令
+    cpu.bus.write_byte(0x301, 0x80); // -128のオフセット (0x80 as i8 = -128)
+
+    cpu.step();
+
+    // PC = 0x300 + 2 + (-128) = 0x282
+    assert_eq!(cpu.pc, 0x282);
+}

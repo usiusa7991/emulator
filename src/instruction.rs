@@ -6,6 +6,10 @@ pub enum JumpTest {
   Always
 }
 
+pub enum JumpRelativeConditions {
+  Always
+}
+
 pub enum LoadByteTarget {
   A, B, C, D, E, H, L, BCI, DEI, HLI
 }
@@ -38,6 +42,7 @@ pub enum Instruction {
   INC(IncDecTarget),
   DEC(IncDecTarget),
   JP(JumpTest),
+  JR(JumpRelativeConditions),
   LD(LoadType),
   RLCA,
   RRCA,
@@ -112,6 +117,7 @@ impl Instruction {
       0x15 => Some(Instruction::DEC(IncDecTarget::D)),
       0x16 => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::D, LoadByteSource::D8))),
       0x17 => Some(Instruction::RLA),
+      0x18 => Some(Instruction::JR(JumpRelativeConditions::Always)),
       _ => None
     }
   }
