@@ -106,16 +106,14 @@ impl CPU {
           },
           LoadType::TwoByte(target, source) => {
             let source_value = match source {
-              LoadTwoByteSource::D16 => self.bus.read_byte(self.pc + 1) as u16
-                | (self.bus.read_byte(self.pc + 2) as u16) << 8,
+              LoadTwoByteSource::D16 => self.read_immediate_16bit(),
               LoadTwoByteSource::SP => self.sp,
               _ => { panic!("TODO: implement other sources") }
             };
             match target {
               LoadTwoByteTarget::BC => self.registers.set_bc(source_value),
               LoadTwoByteTarget::A16 => {
-                let address = self.bus.read_byte(self.pc + 1) as u16
-                | (self.bus.read_byte(self.pc + 2) as u16) << 8;
+                let address = self.read_immediate_16bit();
 
                 self.bus.write_byte(address, (source_value & 0xFF) as u8);
                 self.bus.write_byte(address + 1, (source_value >> 8) as u8);
@@ -284,6 +282,10 @@ impl CPU {
     self.registers.f.half_carry = (value & 0x0F) == 0;
 
     new_value
+  }
+
+  fn read_immediate_16bit(&mut self) -> u16 {
+    self.bus.read_byte(self.pc + 1) as u16 | (self.bus.read_byte(self.pc + 2) as u16) << 8
   }
 }
 
