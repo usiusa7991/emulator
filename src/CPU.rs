@@ -61,15 +61,15 @@ impl CPU {
   fn execute(&mut self, instruction: Instruction) -> u16 {
     match instruction {
       Instruction::NOP => self.pc.wrapping_add(1),
-      Instruction::ADD(target) => {
+      Instruction::ADD(target, source) => {
+        let source_value = match source {
+          AddSource::BC => self.registers.get_bc()
+        };
         match target {
-          ArithmeticTarget::C => {
-            let value = self.registers.c;
-            let new_value = self.add(value);
-            self.registers.a = new_value;
-            self.pc.wrapping_add(1)
-          }
-          _ => { /* TODO: support more targets */ self.pc }
+          AddTarget::HL => self.add_to_hl(source_value),
+        };
+        match source {
+          AddSource::BC => self.pc.wrapping_add(1)
         }
       },
       Instruction::JP(test) => {
@@ -252,16 +252,13 @@ impl CPU {
     (msb << 8) | lsb
   }
 
-  fn add(&mut self, value: u8) -> u8 {
-    let (new_value, did_overflow) = self.registers.a.overflowing_add(value);
-    self.registers.f.zero = new_value == 0;
+  fn add_to_hl(&mut self, value: u16) {
+    let hl_value = self.registers.get_hl();
+    let (new_value, did_overflow) = hl_value.overflowing_add(value);
     self.registers.f.subtract = false;
     self.registers.f.carry = did_overflow;
-    // Half Carry is set if adding the lower nibbles of the value and register A
-    // together result in a value bigger than 0xF. If the result is larger than 0xF
-    // than the addition caused a carry from the lower nibble to the upper nibble.
-    self.registers.f.half_carry = (self.registers.a & 0xF) + (value & 0xF) > 0xF;
-    new_value
+    self.registers.f.half_carry = (value & 0x0FFF) + (hl_value & 0x0FFF) > 0x0FFF;
+    self.registers.set_hl(new_value);
   }
 
   fn inc_8bit(&mut self, value: u8) -> u8 {

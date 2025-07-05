@@ -29,7 +29,7 @@ pub enum LoadType {
 
 pub enum Instruction {
   NOP,
-  ADD(ArithmeticTarget),
+  ADD(AddTarget, AddSource),
   PUSH(StackTarget),
   POP(StackTarget),
   CALL(JumpTest),
@@ -42,8 +42,12 @@ pub enum Instruction {
   RLCA,
 }
 
-pub enum ArithmeticTarget {
-	A, B, C, D, E, H, L, D8, HLI
+pub enum AddTarget {
+	HL
+}
+
+pub enum AddSource {
+	BC
 }
 
 pub enum IncDecTarget {
@@ -92,6 +96,7 @@ impl Instruction {
       0x06 => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::B, LoadByteSource::D8))),
       0x07 => Some(Instruction::RLCA),
       0x08 => Some(Instruction::LD(LoadType::TwoByte(LoadTwoByteTarget::A16, LoadTwoByteSource::SP))),
+      0x09 => Some(Instruction::ADD(AddTarget::HL, AddSource::BC)),
       _ => None
     }
   }
