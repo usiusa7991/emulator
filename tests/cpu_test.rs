@@ -413,3 +413,15 @@ fn dec_d() {
     assert_eq!(cpu.registers.d, 0x41);
     assert_eq!(cpu.pc, 0x01);
 }
+
+#[test]
+fn ld_d_d8() {
+    let mut cpu = CPU::new();
+    cpu.bus.write_byte(0x00, 0x16); // LD D, d8
+    cpu.bus.write_byte(0x01, 0x42); // d8 = 0x42
+
+    cpu.step();
+
+    assert_eq!(cpu.registers.d, 0x42);
+    assert_eq!(cpu.pc, 0x02);
+}
