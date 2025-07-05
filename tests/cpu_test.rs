@@ -857,3 +857,35 @@ fn inc_hl() {
     // 0xFFFF + 1 = 0x0000
     assert_eq!(cpu.registers.get_hl(), 0x0000);
 }
+
+#[test]
+fn inc_h() {
+    let mut cpu = CPU::new();
+
+    // 1. 通常のインクリメント
+    cpu.registers.h = 0x01;
+    cpu.bus.write_byte(0x00, 0x24); // INC H
+    cpu.step();
+    assert_eq!(cpu.registers.h, 0x02);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.half_carry);
+
+    // 2. ハーフキャリー
+    cpu.pc = 0;
+    cpu.registers.h = 0x0F;
+    cpu.bus.write_byte(0x00, 0x24); // INC H
+    cpu.step();
+    assert_eq!(cpu.registers.h, 0x10);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(cpu.registers.f.half_carry);
+
+    // 3. ゼロフラグ
+    cpu.pc = 0;
+    cpu.registers.h = 0xFF;
+    cpu.bus.write_byte(0x00, 0x24); // INC H
+    cpu.step();
+    assert_eq!(cpu.registers.h, 0x00);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(cpu.registers.f.zero);
+}
