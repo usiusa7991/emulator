@@ -826,3 +826,34 @@ fn ld_hlp_a() {
     // PCは1進む
     assert_eq!(cpu.pc, 0x01);
 }
+
+#[test]
+fn inc_hl() {
+    let mut cpu = CPU::new();
+
+    // HL = 0x1234
+    cpu.registers.set_hl(0x1234);
+
+    // INC HL 命令 (0x23)
+    cpu.bus.write_byte(0x00, 0x23);
+
+    cpu.step();
+
+    // HLが1増える
+    assert_eq!(cpu.registers.get_hl(), 0x1235);
+    // フラグは変化しない（全てfalseのまま）
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+    assert!(!cpu.registers.f.carry);
+
+    // アンダーフローのテスト
+    cpu.registers.set_hl(0xFFFF);
+    cpu.pc = 0x10;
+    cpu.bus.write_byte(0x10, 0x23);
+
+    cpu.step();
+
+    // 0xFFFF + 1 = 0x0000
+    assert_eq!(cpu.registers.get_hl(), 0x0000);
+}
