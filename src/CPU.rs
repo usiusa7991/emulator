@@ -219,6 +219,11 @@ impl CPU {
             let new_value = self.dec_8bit(value);
             self.registers.d = new_value;
           },
+          IncDecTarget::E => {
+            let value  = self.registers.e;
+            let new_value = self.dec_8bit(value);
+            self.registers.e = new_value;
+          },
           IncDecTarget::BC => {
             let new_value = self.dec_16bit(self.registers.get_bc());
             self.registers.set_bc(new_value);

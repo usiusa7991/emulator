@@ -666,3 +666,38 @@ fn inc_e() {
     assert_eq!(cpu.pc, 0x01);
     assert!(cpu.registers.f.zero);
 }
+
+#[test]
+fn dec_e() {
+    let mut cpu = CPU::new();
+
+    // 1. 通常のデクリメント
+    cpu.registers.e = 0x02;
+    cpu.bus.write_byte(0x00, 0x1D); // DEC E
+    cpu.step();
+    assert_eq!(cpu.registers.e, 0x01);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.half_carry);
+    assert!(cpu.registers.f.subtract);
+
+    // 2. ハーフキャリー発生（下位4ビットが0のとき）
+    cpu.pc = 0;
+    cpu.registers.e = 0x10;
+    cpu.bus.write_byte(0x00, 0x1D); // DEC E
+    cpu.step();
+    assert_eq!(cpu.registers.e, 0x0F);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(cpu.registers.f.half_carry);
+    assert!(cpu.registers.f.subtract);
+
+    // 3. ゼロフラグ
+    cpu.pc = 0;
+    cpu.registers.e = 0x01;
+    cpu.bus.write_byte(0x00, 0x1D); // DEC E
+    cpu.step();
+    assert_eq!(cpu.registers.e, 0x00);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(cpu.registers.f.zero);
+    assert!(cpu.registers.f.subtract);
+}
