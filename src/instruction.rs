@@ -15,7 +15,7 @@ pub enum LoadByteSource {
 }
 
 pub enum LoadTwoByteTarget {
-  BC, A16
+  BC, DE, A16
 }
 
 pub enum LoadTwoByteSource {
@@ -104,6 +104,7 @@ impl Instruction {
       0x0D => Some(Instruction::DEC(IncDecTarget::C)),
       0x0E => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::C, LoadByteSource::D8))),
       0x0F => Some(Instruction::RRCA),
+      0x11 => Some(Instruction::LD(LoadType::TwoByte(LoadTwoByteTarget::DE, LoadTwoByteSource::D16))),
       _ => None
     }
   }

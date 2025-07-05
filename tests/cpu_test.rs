@@ -347,3 +347,16 @@ fn rrca() {
     assert!(!cpu.registers.f.half_carry);
     assert_eq!(cpu.pc, 0x01);
 }
+
+#[test]
+fn ld_de_d16() {
+    let mut cpu = CPU::new();
+    cpu.bus.write_byte(0x00, 0x11); // LD DE, d16
+    cpu.bus.write_byte(0x01, 0x34); // LSB
+    cpu.bus.write_byte(0x02, 0x12); // MSB
+
+    cpu.step();
+
+    assert_eq!(cpu.registers.get_de(), 0x1234);
+    assert_eq!(cpu.pc, 0x03);
+}
