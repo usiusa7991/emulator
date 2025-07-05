@@ -242,3 +242,21 @@ fn ld_a_bci() {
     assert_eq!(cpu.registers.a, 0xAB);
     assert_eq!(cpu.pc, 0x01);
 }
+
+#[test]
+fn dec_bc() {
+    let mut cpu = CPU::new();
+    
+    // 初期値を設定
+    cpu.registers.set_bc(0x1234);
+    
+    // DEC BC 命令 (0x0B)
+    cpu.bus.write_byte(0x00, 0x0B);
+    
+    // 実行
+    cpu.step();
+    
+    // 結果を検証
+    assert_eq!(cpu.registers.get_bc(), 0x1233);
+    assert_eq!(cpu.pc, 0x01);
+}
