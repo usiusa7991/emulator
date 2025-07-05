@@ -112,6 +112,7 @@ fn dec_b() {
     assert_eq!(cpu.pc, 0x01);
     assert!(!cpu.registers.f.zero);
     assert!(!cpu.registers.f.half_carry);
+    assert!(cpu.registers.f.subtract);
 
     // 2. ハーフキャリー発生（下位4ビットが0のとき）
     cpu.pc = 0;
@@ -121,6 +122,7 @@ fn dec_b() {
     assert_eq!(cpu.registers.b, 0x0F);
     assert_eq!(cpu.pc, 0x01);
     assert!(cpu.registers.f.half_carry);
+    assert!(cpu.registers.f.subtract);
 
     // 3. ゼロフラグ
     cpu.pc = 0;
@@ -130,6 +132,7 @@ fn dec_b() {
     assert_eq!(cpu.registers.b, 0x00);
     assert_eq!(cpu.pc, 0x01);
     assert!(cpu.registers.f.zero);
+    assert!(cpu.registers.f.subtract);
 }
 
 #[test]
