@@ -69,6 +69,27 @@ impl Registers {
     self.h = ((value & 0xFF00) >> 8) as u8;
     self.l = (value & 0xFF) as u8;
   }
+
+  pub fn set_f(
+    &mut self,
+    zero: Option<bool>,
+    subtract: Option<bool>,
+    half_carry: Option<bool>,
+    carry: Option<bool>
+  ) {
+    if let Some(z) = zero {
+      self.f.zero = z;
+    }
+    if let Some(n) = subtract {
+      self.f.subtract = n;
+    }
+    if let Some(h) = half_carry {
+      self.f.half_carry = h;
+    }
+    if let Some(c) = carry {
+      self.f.carry = c;
+    }
+  }
 }
 
 const ZERO_FLAG_BYTE_POSITION: u8 = 7;

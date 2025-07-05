@@ -217,10 +217,12 @@ impl CPU {
         let seventh_bit = value >> 7;
         let new_value = (value << 1) | seventh_bit;
         self.registers.a = new_value;
-        self.registers.f.zero = new_value == 0;
-        self.registers.f.subtract = false;
-        self.registers.f.half_carry = false;
-        self.registers.f.carry = seventh_bit != 0;
+        self.registers.set_f(
+            Some(new_value == 0),
+            Some(false),
+            Some(false),
+            Some(seventh_bit != 0)
+        );
         self.pc.wrapping_add(1)
       },
       Instruction::RRCA => {
@@ -228,10 +230,12 @@ impl CPU {
         let zeroth_bit = value & 1;
         let new_value = (zeroth_bit << 7) | (value >> 1);
         self.registers.a = new_value;
-        self.registers.f.zero = new_value == 0;
-        self.registers.f.subtract = false;
-        self.registers.f.half_carry = false;
-        self.registers.f.carry = zeroth_bit != 0;
+        self.registers.set_f(
+            Some(new_value == 0),
+            Some(false),
+            Some(false),
+            Some(zeroth_bit != 0)
+        );
         self.pc.wrapping_add(1)
       },
       Instruction::RLA => {
@@ -239,10 +243,12 @@ impl CPU {
         let seventh_bit = value >> 7;
         let new_value = (value << 1) | self.registers.f.carry as u8;
         self.registers.a = new_value;
-        self.registers.f.zero = new_value == 0;
-        self.registers.f.subtract = false;
-        self.registers.f.half_carry = false;
-        self.registers.f.carry = seventh_bit != 0;
+        self.registers.set_f(
+            Some(new_value == 0),
+            Some(false),
+            Some(false),
+            Some(seventh_bit != 0)
+        );
         self.pc.wrapping_add(1)
       },
 
@@ -304,29 +310,34 @@ impl CPU {
   fn add_to_hl(&mut self, value: u16) {
     let hl_value = self.registers.get_hl();
     let (new_value, did_overflow) = hl_value.overflowing_add(value);
-    self.registers.f.subtract = false;
-    self.registers.f.carry = did_overflow;
-    self.registers.f.half_carry = (value & 0x0FFF) + (hl_value & 0x0FFF) > 0x0FFF;
+    self.registers.set_f(
+        None,
+        Some(false),
+        Some((value & 0x0FFF) + (hl_value & 0x0FFF) > 0x0FFF),
+        Some(did_overflow)
+    );
     self.registers.set_hl(new_value);
   }
 
   fn inc_8bit(&mut self, value: u8) -> u8 {
     let new_value = value.wrapping_add(1);
-
-    self.registers.f.zero = new_value == 0;
-    self.registers.f.subtract = false;
-    self.registers.f.half_carry = (value & 0x0F) + 1 > 0x0F;
-
+    self.registers.set_f(
+        Some(new_value == 0),
+        Some(false),
+        Some((value & 0x0F) + 1 > 0x0F),
+        None
+    );
     new_value
   }
 
   fn dec_8bit(&mut self, value: u8) -> u8 {
     let new_value = value.wrapping_sub(1);
-
-    self.registers.f.zero = new_value == 0;
-    self.registers.f.subtract = true;
-    self.registers.f.half_carry = (value & 0x0F) == 0;
-
+    self.registers.set_f(
+        Some(new_value == 0),
+        Some(true),
+        Some((value & 0x0F) == 0),
+        None
+    );
     new_value
   }
 
