@@ -701,3 +701,19 @@ fn dec_e() {
     assert!(cpu.registers.f.zero);
     assert!(cpu.registers.f.subtract);
 }
+
+#[test]
+fn ld_e_d8() {
+    let mut cpu = CPU::new();
+
+    // LD E, 0x42 命令
+    // 0x1E: LD E, d8 のオペコード
+    // 0x42: 即値データ
+    cpu.bus.write_byte(0x00, 0x1E); // LD E, d8
+    cpu.bus.write_byte(0x01, 0x42); // d8 = 0x42
+
+    cpu.step();
+
+    assert_eq!(cpu.registers.e, 0x42);
+    assert_eq!(cpu.pc, 0x02);
+}
