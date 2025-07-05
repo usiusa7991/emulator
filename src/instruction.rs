@@ -11,7 +11,7 @@ pub enum LoadByteTarget {
 }
 
 pub enum LoadByteSource {
-  A, B, C, D, E, H, L, D8, HLI
+  A, B, C, D, E, H, L, D8, BCI, HLI
 }
 
 pub enum LoadTwoByteTarget {
@@ -97,6 +97,7 @@ impl Instruction {
       0x07 => Some(Instruction::RLCA),
       0x08 => Some(Instruction::LD(LoadType::TwoByte(LoadTwoByteTarget::A16, LoadTwoByteSource::SP))),
       0x09 => Some(Instruction::ADD(AddTarget::HL, AddSource::BC)),
+      0x0A => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::A, LoadByteSource::BCI))),
       _ => None
     }
   }
