@@ -63,13 +63,14 @@ impl CPU {
       Instruction::NOP => self.pc.wrapping_add(1),
       Instruction::ADD(target, source) => {
         let source_value = match source {
-          AddSource::BC => self.registers.get_bc()
+          AddSource::BC => self.registers.get_bc(),
+          AddSource::DE => self.registers.get_de()
         };
         match target {
           AddTarget::HL => self.add_to_hl(source_value),
         };
         match source {
-          AddSource::BC => self.pc.wrapping_add(1)
+          _ => self.pc.wrapping_add(1)
         }
       },
       Instruction::JP(test) => {

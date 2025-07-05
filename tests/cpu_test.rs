@@ -549,3 +549,43 @@ fn jr_s8() {
     // PC = 0x300 + 2 + (-128) = 0x282
     assert_eq!(cpu.pc, 0x282);
 }
+
+#[test]
+fn add_hl_de() {
+    let mut cpu = CPU::new();
+
+    // HL = 0x1234, DE = 0x1111
+    cpu.registers.set_hl(0x1234);
+    cpu.registers.set_de(0x1111);
+
+    // ADD HL, DE 命令 (0x19)
+    cpu.bus.write_byte(0x00, 0x19);
+
+    cpu.step();
+
+    // 結果: HL = 0x2345
+    assert_eq!(cpu.registers.get_hl(), 0x2345);
+    // Nフラグはクリア
+    assert!(!cpu.registers.f.subtract);
+    // Hフラグ: (0x1234 & 0xFFF) + (0x1111 & 0xFFF) = 0x345 < 0xFFF → false
+    assert!(!cpu.registers.f.half_carry);
+    // Cフラグ: 0x1234 + 0x1111 = 0x2345 < 0x10000 → false
+    assert!(!cpu.registers.f.carry);
+
+    // キャリー発生のケース
+    cpu.registers.set_hl(0xFFFF);
+    cpu.registers.set_de(0x0001);
+    cpu.pc = 0x10;
+    cpu.bus.write_byte(0x10, 0x19);
+
+    cpu.step();
+
+    // HL = 0x0000
+    assert_eq!(cpu.registers.get_hl(), 0x0000);
+    // Cフラグ: 0xFFFF + 0x0001 = 0x10000 → キャリー発生
+    assert!(cpu.registers.f.carry);
+    // Hフラグ: (0xFFF + 0x001) = 0x1000 > 0xFFF → true
+    assert!(cpu.registers.f.half_carry);
+    // Nフラグはクリア
+    assert!(!cpu.registers.f.subtract);
+}
