@@ -99,6 +99,7 @@ impl CPU {
               LoadByteSource::A => self.registers.a,
               LoadByteSource::D8 => self.read_next_byte(),
               LoadByteSource::BCI => self.bus.read_byte(self.registers.get_bc()),
+              LoadByteSource::DEI => self.bus.read_byte(self.registers.get_de()),
               LoadByteSource::HLI => self.bus.read_byte(self.registers.get_hl()),
               _ => { panic!("TODO: implement other sources") }
             };

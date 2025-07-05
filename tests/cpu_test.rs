@@ -589,3 +589,22 @@ fn add_hl_de() {
     // Nフラグはクリア
     assert!(!cpu.registers.f.subtract);
 }
+
+#[test]
+fn ld_a_dei() {
+    let mut cpu = CPU::new();
+
+    // DE = 0x1234, メモリ[0x1234] = 0xAB
+    cpu.registers.set_de(0x1234);
+    cpu.bus.write_byte(0x1234, 0xAB);
+
+    // LD A, (DE) 命令 (0x1A)
+    cpu.bus.write_byte(0x00, 0x1A);
+
+    cpu.step();
+
+    // Aレジスタに0xABがロードされていること
+    assert_eq!(cpu.registers.a, 0xAB);
+    // PCは1進む
+    assert_eq!(cpu.pc, 0x01);
+}
