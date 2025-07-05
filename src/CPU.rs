@@ -298,8 +298,42 @@ impl CPU {
         self.registers.a = new_value;
         self.set_rotation_flags(zero_bit);
         self.pc.wrapping_add(1)
-      }
+      },
+      Instruction::DAA => {
+        let mut offset = 0;
+        let mut should_carry = false;
 
+        let a_value = self.registers.a;
+        let half_carry = self.registers.f.half_carry;
+        let carry = self.registers.f.carry;
+        let subtract = self.registers.f.subtract;
+    
+        if (!subtract && (a_value & 0x0F) > 0x09) || half_carry {
+          offset |= 0x06;
+        }
+    
+        if (!subtract && a_value > 0x99) || carry {
+          offset |= 0x60;
+          should_carry = true;
+        }
+    
+        let output = if !subtract {
+            a_value.wrapping_add(offset)
+        } else {
+            a_value.wrapping_sub(offset)
+        };
+
+        self.registers.a = output;
+
+        self.registers.set_f(
+          Some(output == 0),
+          None,
+          Some(false),
+          Some(should_carry)
+        );
+
+        self.pc.wrapping_add(1)
+      },
       _ => { /* TODO: support more instructions */ self.pc },
     }
   }

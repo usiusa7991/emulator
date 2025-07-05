@@ -940,3 +940,121 @@ fn ld_h_d8() {
     assert_eq!(cpu.registers.h, 0x77);
     assert_eq!(cpu.pc, 0x02);
 }
+
+#[test]
+fn daa() {
+    let mut cpu = CPU::new();
+
+    // 1. 加算後の調整 - 下位4ビットが0x0A-0x0Fの場合
+    cpu.registers.a = 0x0A; // 0x0A > 0x09
+    cpu.registers.f.subtract = false;
+    cpu.registers.f.half_carry = false;
+    cpu.registers.f.carry = false;
+    cpu.bus.write_byte(0x00, 0x27); // DAA
+    cpu.step();
+
+    assert_eq!(cpu.registers.a, 0x10); // 0x0A + 0x06 = 0x10
+    assert_eq!(cpu.pc, 0x01);
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract); // 変更されない - DAAはsubtractフラグを変更しない
+    assert!(!cpu.registers.f.half_carry); // 常にクリア - DAA実行後はhalf_carryは常にfalse
+    assert!(!cpu.registers.f.carry);
+
+    // 2. 加算後の調整 - 上位4ビットが0x9A-0xFFの場合
+    cpu.pc = 0;
+    cpu.registers.a = 0x9A; // 0x9A > 0x99
+    cpu.registers.f.subtract = false;
+    cpu.registers.f.half_carry = false;
+    cpu.registers.f.carry = false;
+    cpu.bus.write_byte(0x00, 0x27); // DAA
+    cpu.step();
+
+    assert_eq!(cpu.registers.a, 0x00); // 0x9A + 0x60 = 0xFA, オーバーフローで0x00
+    assert_eq!(cpu.pc, 0x01);
+    assert!(cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+    assert!(cpu.registers.f.carry); // キャリーが発生 - 0x9A + 0x60 = 0xFAでオーバーフロー
+
+    // 3. 加算後の調整 - 両方の条件が満たされる場合
+    cpu.pc = 0;
+    cpu.registers.a = 0x9F; // 0x9F > 0x99 かつ (0x9F & 0x0F) = 0x0F > 0x09
+    cpu.registers.f.subtract = false;
+    cpu.registers.f.half_carry = false;
+    cpu.registers.f.carry = false;
+    cpu.bus.write_byte(0x00, 0x27); // DAA
+    cpu.step();
+
+    assert_eq!(cpu.registers.a, 0x05); // 0x9F + 0x06 + 0x60 = 0x105, オーバーフローで0x05
+    assert_eq!(cpu.pc, 0x01);
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+    assert!(cpu.registers.f.carry);
+
+    // 4. 減算後の調整 - 調整なし
+    cpu.pc = 0;
+    cpu.registers.a = 0x45;
+    cpu.registers.f.subtract = true;
+    cpu.registers.f.half_carry = false;
+    cpu.registers.f.carry = false;
+    cpu.bus.write_byte(0x00, 0x27); // DAA
+    cpu.step();
+
+    assert_eq!(cpu.registers.a, 0x45); // 調整なし
+    assert_eq!(cpu.pc, 0x01);
+    assert!(!cpu.registers.f.zero);
+    assert!(cpu.registers.f.subtract); // 変更されない
+    assert!(!cpu.registers.f.half_carry);
+    assert!(!cpu.registers.f.carry);
+
+    // 5. 減算後の調整 - half_carryフラグがある場合
+    cpu.pc = 0;
+    cpu.registers.a = 0x45;
+    cpu.registers.f.subtract = true;
+    cpu.registers.f.half_carry = true;
+    cpu.registers.f.carry = false;
+    cpu.bus.write_byte(0x00, 0x27); // DAA
+    cpu.step();
+
+    assert_eq!(cpu.registers.a, 0x3F); // 0x45 - 0x06 = 0x3F
+    assert_eq!(cpu.pc, 0x01);
+    assert!(!cpu.registers.f.zero);
+    assert!(cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+    assert!(!cpu.registers.f.carry);
+
+    // 6. 減算後の調整 - carryフラグがある場合
+    // DAAの仕様では、減算時にcarryフラグが立っている場合は0x60を引く
+    // この場合、carryフラグは保持される（新しいキャリーは発生しない）
+    cpu.pc = 0;
+    cpu.registers.a = 0x45;
+    cpu.registers.f.subtract = true;
+    cpu.registers.f.half_carry = false;
+    cpu.registers.f.carry = true;
+    cpu.bus.write_byte(0x00, 0x27); // DAA
+    cpu.step();
+
+    assert_eq!(cpu.registers.a, 0xE5); // 0x45 - 0x60 = 0xE5 (wrapping_sub)
+    assert_eq!(cpu.pc, 0x01);
+    assert!(!cpu.registers.f.zero);
+    assert!(cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+    assert!(cpu.registers.f.carry); // 保持される - DAAは既存のcarryフラグを変更しない
+
+    // 7. 結果が0になる場合
+    cpu.pc = 0;
+    cpu.registers.a = 0x00;
+    cpu.registers.f.subtract = false;
+    cpu.registers.f.half_carry = false;
+    cpu.registers.f.carry = false;
+    cpu.bus.write_byte(0x00, 0x27); // DAA
+    cpu.step();
+
+    assert_eq!(cpu.registers.a, 0x00);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+    assert!(!cpu.registers.f.carry);
+}
