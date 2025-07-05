@@ -176,6 +176,22 @@ fn rlca() {
     assert_eq!(cpu.registers.a, 0b1000_0100);
     assert_eq!(cpu.pc, 0x01);
     assert!(!cpu.registers.f.carry);
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+
+    // 3. 結果が0になるケース
+    cpu.pc = 0; // PCをリセット
+    cpu.registers.a = 0b0000_0000;
+    cpu.bus.write_byte(0x00, 0x07); // RLCA
+    cpu.step();
+
+    assert_eq!(cpu.registers.a, 0b0000_0000);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(!cpu.registers.f.carry);
+    assert!(cpu.registers.f.zero); // ゼロフラグが立つ
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
 }
 
 #[test]
@@ -346,6 +362,20 @@ fn rrca() {
     assert!(!cpu.registers.f.subtract);
     assert!(!cpu.registers.f.half_carry);
     assert_eq!(cpu.pc, 0x01);
+
+    // 3. 結果が0になるケース
+    cpu.pc = 0; // PCをリセット
+    cpu.registers.a = 0b0000_0000;
+    cpu.bus.write_byte(0x00, 0x0F); // RRCA
+    
+    cpu.step();
+    
+    assert_eq!(cpu.registers.a, 0b0000_0000);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(!cpu.registers.f.carry);
+    assert!(cpu.registers.f.zero); // ゼロフラグが立つ
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
 }
 
 #[test]
@@ -439,7 +469,7 @@ fn rla() {
     
     assert_eq!(cpu.registers.a, 0b0000_0000); // 左シフト + キャリー
     assert!(cpu.registers.f.carry); // キャリーフラグが設定される
-    assert!(!cpu.registers.f.zero);
+    assert!(cpu.registers.f.zero); // 結果が0なのでゼロフラグが立つ
     assert!(!cpu.registers.f.subtract);
     assert!(!cpu.registers.f.half_carry);
     assert_eq!(cpu.pc, 0x01);
@@ -458,4 +488,19 @@ fn rla() {
     assert!(!cpu.registers.f.subtract);
     assert!(!cpu.registers.f.half_carry);
     assert_eq!(cpu.pc, 0x01);
+
+    // 3. 結果が0になるケース
+    cpu.pc = 0; // PCをリセット
+    cpu.registers.a = 0b0000_0000;
+    cpu.registers.f.carry = false;
+    cpu.bus.write_byte(0x00, 0x17); // RLA
+    
+    cpu.step();
+    
+    assert_eq!(cpu.registers.a, 0b0000_0000);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(!cpu.registers.f.carry);
+    assert!(cpu.registers.f.zero); // ゼロフラグが立つ
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
 }

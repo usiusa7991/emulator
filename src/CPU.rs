@@ -217,7 +217,7 @@ impl CPU {
         let seventh_bit = value >> 7;
         let new_value = (value << 1) | seventh_bit;
         self.registers.a = new_value;
-        self.registers.f.zero = false;
+        self.registers.f.zero = new_value == 0;
         self.registers.f.subtract = false;
         self.registers.f.half_carry = false;
         self.registers.f.carry = seventh_bit != 0;
@@ -228,7 +228,7 @@ impl CPU {
         let zeroth_bit = value & 1;
         let new_value = (zeroth_bit << 7) | (value >> 1);
         self.registers.a = new_value;
-        self.registers.f.zero = false;
+        self.registers.f.zero = new_value == 0;
         self.registers.f.subtract = false;
         self.registers.f.half_carry = false;
         self.registers.f.carry = zeroth_bit != 0;
@@ -239,7 +239,7 @@ impl CPU {
         let seventh_bit = value >> 7;
         let new_value = (value << 1) | self.registers.f.carry as u8;
         self.registers.a = new_value;
-        self.registers.f.zero = false;
+        self.registers.f.zero = new_value == 0;
         self.registers.f.subtract = false;
         self.registers.f.half_carry = false;
         self.registers.f.carry = seventh_bit != 0;
