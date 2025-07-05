@@ -202,3 +202,22 @@ fn ld_a16_sp() {
     assert_eq!(cpu.bus.read_byte(0x1235), 0xBE); // MSB
     assert_eq!(cpu.pc, 0x03); // PCは3進む
 }
+
+#[test]
+fn add_hl_bc() {
+    let mut cpu = CPU::new();
+    
+    // 初期値を設定
+    cpu.registers.set_hl(0x1000);
+    cpu.registers.set_bc(0x2000);
+    
+    // ADD HL, BC 命令 (0x09)
+    cpu.bus.write_byte(0x00, 0x09);
+    
+    // 実行
+    cpu.step();
+    
+    // 結果を検証
+    assert_eq!(cpu.registers.get_hl(), 0x3000);
+    assert_eq!(cpu.pc, 0x01);
+}
