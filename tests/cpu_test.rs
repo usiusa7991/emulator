@@ -608,3 +608,29 @@ fn ld_a_dei() {
     // PCは1進む
     assert_eq!(cpu.pc, 0x01);
 }
+
+#[test]
+fn dec_de() {
+    let mut cpu = CPU::new();
+
+    // DE = 0x1234
+    cpu.registers.set_de(0x1234);
+
+    // DEC DE 命令 (0x1B)
+    cpu.bus.write_byte(0x00, 0x1B);
+
+    cpu.step();
+
+    // DEが1減る
+    assert_eq!(cpu.registers.get_de(), 0x1233);
+
+    // アンダーフローのテスト
+    cpu.registers.set_de(0x0000);
+    cpu.pc = 0x10;
+    cpu.bus.write_byte(0x10, 0x1B);
+
+    cpu.step();
+
+    // 0x0000 - 1 = 0xFFFF
+    assert_eq!(cpu.registers.get_de(), 0xFFFF);
+}

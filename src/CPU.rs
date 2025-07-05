@@ -219,6 +219,10 @@ impl CPU {
             let new_value = self.dec_16bit(self.registers.get_bc());
             self.registers.set_bc(new_value);
           },
+          IncDecTarget::DE => {
+            let new_value = self.dec_16bit(self.registers.get_de());
+            self.registers.set_de(new_value);
+          },
           _ => { panic!("TODO: support more targets") }
         }
         self.pc.wrapping_add(1)

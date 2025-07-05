@@ -120,6 +120,7 @@ impl Instruction {
       0x18 => Some(Instruction::JR(JumpRelativeConditions::Always)),
       0x19 => Some(Instruction::ADD(AddTarget::HL, AddSource::DE)),
       0x1A => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::A, LoadByteSource::DEI))),
+      0x1B => Some(Instruction::DEC(IncDecTarget::DE)),
       _ => None
     }
   }
