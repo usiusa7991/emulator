@@ -173,6 +173,11 @@ impl CPU {
             let new_value = value.wrapping_add(1);
             self.registers.set_bc(new_value);
           },
+          IncDecTarget::DE => {
+            let value = self.registers.get_de();
+            let new_value = value.wrapping_add(1);
+            self.registers.set_de(new_value);
+          },
           _ => { panic!("TODO: support more targets") }
         }
         self.pc.wrapping_add(1)

@@ -374,3 +374,16 @@ fn ld_dei_a() {
     assert_eq!(cpu.bus.read_byte(0x1234), 0xAB);
     assert_eq!(cpu.pc, 0x01);
 }
+
+#[test]
+fn inc_de() {
+    let mut cpu = CPU::new();
+    cpu.registers.set_de(0x1234);
+
+    cpu.bus.write_byte(0x00, 0x13); // INC DE
+
+    cpu.step();
+
+    assert_eq!(cpu.registers.get_de(), 0x1235);
+    assert_eq!(cpu.pc, 0x01);
+}
