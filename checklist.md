@@ -2,20 +2,20 @@
 #### 00–0F
 - [x] 00 NOP
 - [x] 01 LD BC,d16
-- [ ] 02 LD (BC),A
-- [ ] 03 INC BC
-- [ ] 04 INC B
-- [ ] 05 DEC B
-- [ ] 06 LD B,d8
-- [ ] 07 RLCA
-- [ ] 08 LD (a16),SP
-- [ ] 09 ADD HL,BC
-- [ ] 0A LD A,(BC)
-- [ ] 0B DEC BC
-- [ ] 0C INC C
-- [ ] 0D DEC C
-- [ ] 0E LD C,d8
-- [ ] 0F RRCA
+- [x] 02 LD (BC),A
+- [x] 03 INC BC
+- [x] 04 INC B
+- [x] 05 DEC B
+- [x] 06 LD B,d8
+- [x] 07 RLCA
+- [x] 08 LD (a16),SP
+- [x] 09 ADD HL,BC
+- [x] 0A LD A,(BC)
+- [x] 0B DEC BC
+- [x] 0C INC C
+- [x] 0D DEC C
+- [x] 0E LD C,d8
+- [x] 0F RRCA
 
 #### 10–1F
 - [ ] 10 STOP
