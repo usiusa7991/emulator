@@ -425,3 +425,37 @@ fn ld_d_d8() {
     assert_eq!(cpu.registers.d, 0x42);
     assert_eq!(cpu.pc, 0x02);
 }
+
+#[test]
+fn rla() {
+    let mut cpu = CPU::new();
+    
+    // 1. キャリーが発生するケース
+    cpu.registers.a = 0b1000_0000;
+    cpu.registers.f.carry = false;
+    cpu.bus.write_byte(0x00, 0x17); // RLA
+    
+    cpu.step();
+    
+    assert_eq!(cpu.registers.a, 0b0000_0000); // 左シフト + キャリー
+    assert!(cpu.registers.f.carry); // キャリーフラグが設定される
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+    assert_eq!(cpu.pc, 0x01);
+    
+    // 2. キャリーが発生しないケース
+    cpu.pc = 0; // PCをリセット
+    cpu.registers.a = 0b0100_0000;
+    cpu.registers.f.carry = true;
+    cpu.bus.write_byte(0x00, 0x17); // RLA
+    
+    cpu.step();
+    
+    assert_eq!(cpu.registers.a, 0b1000_0001); // 左シフト + キャリー
+    assert!(!cpu.registers.f.carry); // キャリーフラグがクリアされる
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+    assert_eq!(cpu.pc, 0x01);
+}

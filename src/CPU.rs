@@ -234,6 +234,18 @@ impl CPU {
         self.registers.f.carry = zeroth_bit != 0;
         self.pc.wrapping_add(1)
       },
+      Instruction::RLA => {
+        let value = self.registers.a;
+        let seventh_bit = value >> 7;
+        let new_value = (value << 1) | self.registers.f.carry as u8;
+        self.registers.a = new_value;
+        self.registers.f.zero = false;
+        self.registers.f.subtract = false;
+        self.registers.f.half_carry = false;
+        self.registers.f.carry = seventh_bit != 0;
+        self.pc.wrapping_add(1)
+      },
+
       _ => { /* TODO: support more instructions */ self.pc },
     }
   }
