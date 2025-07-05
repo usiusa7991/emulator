@@ -184,7 +184,11 @@ impl CPU {
             self.registers.b = new_value;
             self.pc.wrapping_add(1)
           },
-          IncDecTarget::BC => self.dec_16bit(self.registers.get_bc()),
+          IncDecTarget::BC => {
+            let new_value = self.dec_16bit(self.registers.get_bc());
+            self.registers.set_bc(new_value);
+            self.pc.wrapping_add(1)
+          },
           _ => { panic!("TODO: support more targets") }
         }
       },
@@ -284,8 +288,8 @@ impl CPU {
   }
 
   fn dec_16bit(&mut self, value: u16) -> u16 {
-    let new_value = self.registers.set_bc(value.wrapping_sub(1));
-    self.pc.wrapping_add(1)
+    let new_value = value.wrapping_sub(1);
+    new_value
   }
 
   fn read_immediate_16bit(&mut self) -> u16 {
