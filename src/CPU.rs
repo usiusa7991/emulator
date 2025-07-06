@@ -219,6 +219,10 @@ impl CPU {
       },
       Instruction::INC(target) => {
         match target {
+          IncDecTarget::A => {
+            let new_value = self.inc_8bit(self.registers.a);
+            self.registers.a = new_value;
+          },
           IncDecTarget::B => {
             let new_value = self.inc_8bit(self.registers.b);
             self.registers.b = new_value;
@@ -274,6 +278,11 @@ impl CPU {
       },
       Instruction::DEC(target) => {
         match target {
+          IncDecTarget::A => {
+            let value = self.registers.a;
+            let new_value = self.dec_8bit(value);
+            self.registers.a = new_value;
+          },
           IncDecTarget::B => {
             let value  = self.registers.b;
             let new_value = self.dec_8bit(value);
