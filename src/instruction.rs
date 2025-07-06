@@ -9,6 +9,7 @@ pub enum JumpTest {
 pub enum JumpRelativeConditions {
   NoZeroFlag,
   ZeroFlag,
+  NoCarryFlag,
   Always
 }
 
@@ -146,6 +147,7 @@ impl Instruction {
       0x2D => Some(Instruction::DEC(IncDecTarget::L)),
       0x2E => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::L, LoadByteSource::D8))),
       0x2F => Some(Instruction::CPL),
+      0x30 => Some(Instruction::JR(JumpRelativeConditions::NoCarryFlag)),
       _ => None
     }
   }

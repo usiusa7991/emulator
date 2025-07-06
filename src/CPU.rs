@@ -96,6 +96,9 @@ impl CPU {
           JumpRelativeConditions::ZeroFlag => {
             self.registers.f.zero == true
           },
+          JumpRelativeConditions::NoCarryFlag => {
+            self.registers.f.carry == false
+          },
         };
 
         if condition_flag {
