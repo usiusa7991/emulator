@@ -359,6 +359,16 @@ impl CPU {
 
         self.pc.wrapping_add(1)
       },
+      Instruction::CPL => {
+        self.registers.a = !self.registers.a;
+        self.registers.set_f(
+          None,
+          Some(true),
+          Some(true),
+          None
+        );
+        self.pc.wrapping_add(1)
+      },
       _ => { /* TODO: support more instructions */ self.pc },
     }
   }

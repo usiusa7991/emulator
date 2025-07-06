@@ -1286,3 +1286,38 @@ fn ld_l_d8() {
     assert_eq!(cpu.registers.l, 0x77);
     assert_eq!(cpu.pc, 0x02);
 }
+
+#[test]
+fn cpl() {
+    let mut cpu = CPU::new();
+    // 1. 通常の反転
+    cpu.registers.a = 0b1010_0101;
+    cpu.registers.f.zero = false;
+    cpu.registers.f.carry = true;
+    cpu.bus.write_byte(0x00, 0x2F); // CPL
+    cpu.step();
+    assert_eq!(cpu.registers.a, 0b0101_1010);
+    // N/Hフラグがセット
+    assert!(cpu.registers.f.subtract);
+    assert!(cpu.registers.f.half_carry);
+    // Z/Cフラグは変化しない
+    assert!(!cpu.registers.f.zero);
+    assert!(cpu.registers.f.carry);
+    assert_eq!(cpu.pc, 0x01);
+
+    // 2. すべてのビットが1の場合
+    cpu.pc = 0;
+    cpu.registers.a = 0xFF;
+    cpu.registers.f.zero = false;
+    cpu.registers.f.carry = false;
+    cpu.bus.write_byte(0x00, 0x2F); // CPL
+    cpu.step();
+    assert_eq!(cpu.registers.a, 0x00);
+    // N/Hフラグがセット
+    assert!(cpu.registers.f.subtract);
+    assert!(cpu.registers.f.half_carry);
+    // Z/Cフラグは変化しない
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.carry);
+    assert_eq!(cpu.pc, 0x01);
+}
