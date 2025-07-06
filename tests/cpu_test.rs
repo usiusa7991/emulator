@@ -1550,3 +1550,33 @@ fn scf() {
     assert!(!cpu.registers.f.zero);
     assert_eq!(cpu.pc, 0x01);
 }
+
+#[test]
+fn jr_c_s8() {
+    let mut cpu = CPU::new();
+    // 1. キャリーフラグが立っている場合（ジャンプする）
+    cpu.pc = 0x4000;
+    cpu.registers.f.carry = true;
+    cpu.bus.write_byte(0x4000, 0x38); // JR C, s8
+    cpu.bus.write_byte(0x4001, 0x06); // +6
+    cpu.step();
+    assert_eq!(cpu.pc, 0x4000 + 2 + 6); // 0x4008
+
+    // 2. キャリーフラグが立っていない場合（ジャンプしない）
+    let mut cpu = CPU::new();
+    cpu.pc = 0x5000;
+    cpu.registers.f.carry = false;
+    cpu.bus.write_byte(0x5000, 0x38); // JR C, s8
+    cpu.bus.write_byte(0x5001, 0x06); // +6
+    cpu.step();
+    assert_eq!(cpu.pc, 0x5002); // 通常通り次命令へ
+
+    // 3. 負のオフセット（-4）でジャンプ
+    let mut cpu = CPU::new();
+    cpu.pc = 0x6000;
+    cpu.registers.f.carry = true;
+    cpu.bus.write_byte(0x6000, 0x38); // JR C, s8
+    cpu.bus.write_byte(0x6001, 0xFC); // -4（0xFC as i8 = -4）
+    cpu.step();
+    assert_eq!(cpu.pc, 0x6000 + 2 - 4); // 0x5FFE
+}
