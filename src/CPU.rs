@@ -323,6 +323,10 @@ impl CPU {
             let new_value = self.dec_8bit(value);
             self.bus.write_byte(address, new_value);
           },
+          IncDecTarget::SP => {
+            let new_value = self.dec_16bit(self.sp);
+            self.sp = new_value;
+          },
           _ => { panic!("TODO: support more targets") }
         }
         self.pc.wrapping_add(1)

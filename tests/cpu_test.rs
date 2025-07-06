@@ -1,5 +1,4 @@
 use emulator::cpu::CPU;
-use emulator::instruction::{Instruction, JumpRelativeConditions};
 
 #[test]
 fn nop() {
@@ -1653,4 +1652,33 @@ fn ld_a_hlm() {
     assert_eq!(cpu.registers.a, 0x42);
     assert_eq!(cpu.registers.get_hl(), 0xFFFF); // 0x0000 - 1 = 0xFFFF
     assert_eq!(cpu.pc, 0x11);
+}
+
+#[test]
+fn dec_sp() {
+    let mut cpu = CPU::new();
+    // 1. 通常のデクリメント
+    cpu.sp = 0x1234;
+    cpu.bus.write_byte(0x00, 0x3B); // DEC SP
+    cpu.step();
+    assert_eq!(cpu.sp, 0x1233);
+    assert_eq!(cpu.pc, 0x01);
+    // フラグは変化しない（全てfalseのまま）
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+    assert!(!cpu.registers.f.carry);
+
+    // 2. アンダーフローのテスト
+    cpu.sp = 0x0000;
+    cpu.pc = 0x10;
+    cpu.bus.write_byte(0x10, 0x3B); // DEC SP
+    cpu.step();
+    assert_eq!(cpu.sp, 0xFFFF);
+    assert_eq!(cpu.pc, 0x11);
+    // フラグは変化しない
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+    assert!(!cpu.registers.f.carry);
 }
