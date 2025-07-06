@@ -128,6 +128,7 @@ impl CPU {
               LoadByteTarget::D => self.registers.d = source_value,
               LoadByteTarget::E => self.registers.e = source_value,
               LoadByteTarget::H => self.registers.h = source_value,
+              LoadByteTarget::L => self.registers.l = source_value,
               LoadByteTarget::BCI => self.bus.write_byte(self.registers.get_bc(), source_value),
               LoadByteTarget::DEI => self.bus.write_byte(self.registers.get_de(), source_value),
               LoadByteTarget::HLI => self.bus.write_byte(self.registers.get_hl(), source_value),

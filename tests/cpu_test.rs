@@ -1271,3 +1271,18 @@ fn dec_l() {
     assert!(cpu.registers.f.subtract);
     assert!(cpu.registers.f.half_carry);
 }
+
+#[test]
+fn ld_l_d8() {
+    let mut cpu = CPU::new();
+    // LD L, 0x77 命令
+    // 0x2E: LD L, d8 のオペコード
+    // 0x77: 即値データ
+    cpu.bus.write_byte(0x00, 0x2E); // LD L, d8
+    cpu.bus.write_byte(0x01, 0x77); // d8 = 0x77
+
+    cpu.step();
+
+    assert_eq!(cpu.registers.l, 0x77);
+    assert_eq!(cpu.pc, 0x02);
+}
