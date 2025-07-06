@@ -14,7 +14,7 @@ pub enum JumpRelativeConditions {
 }
 
 pub enum LoadByteTarget {
-  A, B, C, D, E, H, L, BCI, DEI, HLI, HLIP
+  A, B, C, D, E, H, L, BCI, DEI, HLI, HLIP, HLIM
 }
 
 pub enum LoadByteSource {
@@ -149,6 +149,7 @@ impl Instruction {
       0x2F => Some(Instruction::CPL),
       0x30 => Some(Instruction::JR(JumpRelativeConditions::NoCarryFlag)),
       0x31 => Some(Instruction::LD(LoadType::TwoByte(LoadTwoByteTarget::SP, LoadTwoByteSource::D16))),
+      0x32 => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::HLIM, LoadByteSource::A))),
       _ => None
     }
   }

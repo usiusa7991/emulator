@@ -1369,3 +1369,29 @@ fn ld_sp_d16() {
     assert_eq!(cpu.sp, 0xBEEF);
     assert_eq!(cpu.pc, 0x03);
 }
+
+#[test]
+fn ld_hlm_a() {
+    let mut cpu = CPU::new();
+    // HL = 0x1234, A = 0xAB
+    cpu.registers.set_hl(0x1234);
+    cpu.registers.a = 0xAB;
+    cpu.bus.write_byte(0x00, 0x32); // LD (HL-), A
+    cpu.step();
+    // HLの指すアドレスにAの値が書き込まれている
+    assert_eq!(cpu.bus.read_byte(0x1234), 0xAB);
+    // HLが-1されている
+    assert_eq!(cpu.registers.get_hl(), 0x1233);
+    // PCは1進む
+    assert_eq!(cpu.pc, 0x01);
+
+    // HLが0x0000の場合のラップアラウンドも確認
+    cpu.registers.set_hl(0x0000);
+    cpu.registers.a = 0x42;
+    cpu.pc = 0x10;
+    cpu.bus.write_byte(0x10, 0x32); // LD (HL-), A
+    cpu.step();
+    assert_eq!(cpu.bus.read_byte(0x0000), 0x42);
+    assert_eq!(cpu.registers.get_hl(), 0xFFFF); // 0x0000 - 1 = 0xFFFF
+    assert_eq!(cpu.pc, 0x11);
+}

@@ -140,6 +140,11 @@ impl CPU {
                 self.bus.write_byte(self.registers.get_hl(), source_value);
                 self.registers.set_hl(hl_value.wrapping_add(1))
               },
+              LoadByteTarget::HLIM => {
+                let hl_value = self.registers.get_hl();
+                self.bus.write_byte(self.registers.get_hl(), source_value);
+                self.registers.set_hl(hl_value.wrapping_sub(1))
+              },
               _ => { panic!("TODO: implement other targets") }
             };
             match source {
