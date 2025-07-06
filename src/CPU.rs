@@ -64,7 +64,8 @@ impl CPU {
       Instruction::ADD(target, source) => {
         let source_value = match source {
           AddSource::BC => self.registers.get_bc(),
-          AddSource::DE => self.registers.get_de()
+          AddSource::DE => self.registers.get_de(),
+          AddSource::HL => self.registers.get_hl()
         };
         match target {
           AddTarget::HL => self.add_to_hl(source_value),

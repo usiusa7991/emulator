@@ -1059,7 +1059,7 @@ fn daa() {
 }
 
 #[test]
-fn test_jr_z_s8() {
+fn jr_z_s8() {
     // 1. Zeroフラグが立っている場合（ジャンプする）
     let mut cpu = CPU::new();
     cpu.pc = 0x1000;
@@ -1095,4 +1095,49 @@ fn test_jr_z_s8() {
     cpu.bus.write_byte(0x4001, 0x00); // 0
     cpu.step();
     assert_eq!(cpu.pc, 0x4002); // 0x4000 + 2 + 0
+}
+
+#[test]
+fn add_hl_hl() {
+    let mut cpu = CPU::new();
+    // 1. 通常の加算
+    cpu.registers.set_hl(0x1234);
+    cpu.bus.write_byte(0x00, 0x29); // ADD HL, HL
+    cpu.step();
+    assert_eq!(cpu.registers.get_hl(), 0x2468);
+    assert_eq!(cpu.pc, 0x01);
+    // Nフラグはクリア
+    assert!(!cpu.registers.f.subtract);
+    // Hフラグ: (0x1234 & 0xFFF) + (0x1234 & 0xFFF) = 0x468 < 0xFFF → false
+    assert!(!cpu.registers.f.half_carry);
+    // Cフラグ: 0x1234 + 0x1234 = 0x2468 < 0x10000 → false
+    assert!(!cpu.registers.f.carry);
+
+    // 2. キャリー発生のケース
+    cpu.registers.set_hl(0x8000);
+    cpu.pc = 0x10;
+    cpu.bus.write_byte(0x10, 0x29); // ADD HL, HL
+    cpu.step();
+    // 0x8000 + 0x8000 = 0x10000 → 0x0000
+    assert_eq!(cpu.registers.get_hl(), 0x0000);
+    // Cフラグ: キャリー発生
+    assert!(cpu.registers.f.carry);
+    // Hフラグ: (0x8000 & 0xFFF) + (0x8000 & 0xFFF) = 0x0000 + 0x0000 = 0x0000 → false
+    assert!(!cpu.registers.f.half_carry);
+    // Nフラグはクリア
+    assert!(!cpu.registers.f.subtract);
+
+    // 3. ハーフキャリー発生のケース
+    cpu.registers.set_hl(0x0FFF);
+    cpu.pc = 0x20;
+    cpu.bus.write_byte(0x20, 0x29); // ADD HL, HL
+    cpu.step();
+    // 0x0FFF + 0x0FFF = 0x1FFE
+    assert_eq!(cpu.registers.get_hl(), 0x1FFE);
+    // Hフラグ: (0x0FFF & 0xFFF) + (0x0FFF & 0xFFF) = 0x0FFF + 0x0FFF = 0x1FFE > 0x0FFF → true
+    assert!(cpu.registers.f.half_carry);
+    // Cフラグ: 0x1FFE < 0x10000 → false
+    assert!(!cpu.registers.f.carry);
+    // Nフラグはクリア
+    assert!(!cpu.registers.f.subtract);
 }

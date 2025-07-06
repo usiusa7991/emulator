@@ -58,7 +58,7 @@ pub enum AddTarget {
 }
 
 pub enum AddSource {
-	BC, DE
+	BC, DE, HL
 }
 
 pub enum IncDecTarget {
@@ -138,6 +138,7 @@ impl Instruction {
       0x26 => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::H, LoadByteSource::D8))),
       0x27 => Some(Instruction::DAA),
       0x28 => Some(Instruction::JR(JumpRelativeConditions::ZeroFlag)),
+      0x29 => Some(Instruction::ADD(AddTarget::HL, AddSource::HL)),
       _ => None
     }
   }
