@@ -44,104 +44,104 @@
 - [x] 25 DEC H
 - [x] 26 LD H,d8
 - [x] 27 DAA
-- [ ] 28 JR Z,r8
-- [ ] 29 ADD HL,HL
-- [ ] 2A LD A,(HL+)
-- [ ] 2B DEC HL
-- [ ] 2C INC L
-- [ ] 2D DEC L
-- [ ] 2E LD L,d8
-- [ ] 2F CPL
+- [x] 28 JR Z,r8
+- [x] 29 ADD HL,HL
+- [x] 2A LD A,(HL+)
+- [x] 2B DEC HL
+- [x] 2C INC L
+- [x] 2D DEC L
+- [x] 2E LD L,d8
+- [x] 2F CPL
 
 #### 30–3F
-- [ ] 30 JR NC,r8
-- [ ] 31 LD SP,d16
-- [ ] 32 LD (HL-),A
-- [ ] 33 INC SP
-- [ ] 34 INC (HL)
-- [ ] 35 DEC (HL)
-- [ ] 36 LD (HL),d8
-- [ ] 37 SCF
-- [ ] 38 JR C,r8
-- [ ] 39 ADD HL,SP
-- [ ] 3A LD A,(HL-)
-- [ ] 3B DEC SP
-- [ ] 3C INC A
-- [ ] 3D DEC A
-- [ ] 3E LD A,d8
-- [ ] 3F CCF
+- [x] 30 JR NC,r8
+- [x] 31 LD SP,d16
+- [x] 32 LD (HL-),A
+- [x] 33 INC SP
+- [x] 34 INC (HL)
+- [x] 35 DEC (HL)
+- [x] 36 LD (HL),d8
+- [x] 37 SCF
+- [x] 38 JR C,r8
+- [x] 39 ADD HL,SP
+- [x] 3A LD A,(HL-)
+- [x] 3B DEC SP
+- [x] 3C INC A
+- [x] 3D DEC A
+- [x] 3E LD A,d8
+- [x] 3F CCF
 
 #### 40–4F
-- [ ] 40 LD B,B
-- [ ] 41 LD B,C
-- [ ] 42 LD B,D
-- [ ] 43 LD B,E
-- [ ] 44 LD B,H
-- [ ] 45 LD B,L
-- [ ] 46 LD B,(HL)
-- [ ] 47 LD B,A
-- [ ] 48 LD C,B
-- [ ] 49 LD C,C
-- [ ] 4A LD C,D
-- [ ] 4B LD C,E
-- [ ] 4C LD C,H
-- [ ] 4D LD C,L
-- [ ] 4E LD C,(HL)
-- [ ] 4F LD C,A
+- [x] 40 LD B,B
+- [x] 41 LD B,C
+- [x] 42 LD B,D
+- [x] 43 LD B,E
+- [x] 44 LD B,H
+- [x] 45 LD B,L
+- [x] 46 LD B,(HL)
+- [x] 47 LD B,A
+- [x] 48 LD C,B
+- [x] 49 LD C,C
+- [x] 4A LD C,D
+- [x] 4B LD C,E
+- [x] 4C LD C,H
+- [x] 4D LD C,L
+- [x] 4E LD C,(HL)
+- [x] 4F LD C,A
 
 #### 50–5F
-- [ ] 50 LD D,B
-- [ ] 51 LD D,C
-- [ ] 52 LD D,D
-- [ ] 53 LD D,E
-- [ ] 54 LD D,H
-- [ ] 55 LD D,L
-- [ ] 56 LD D,(HL)
-- [ ] 57 LD D,A
-- [ ] 58 LD E,B
-- [ ] 59 LD E,C
-- [ ] 5A LD E,D
-- [ ] 5B LD E,E
-- [ ] 5C LD E,H
-- [ ] 5D LD E,L
-- [ ] 5E LD E,(HL)
-- [ ] 5F LD E,A
+- [x] 50 LD D,B
+- [x] 51 LD D,C
+- [x] 52 LD D,D
+- [x] 53 LD D,E
+- [x] 54 LD D,H
+- [x] 55 LD D,L
+- [x] 56 LD D,(HL)
+- [x] 57 LD D,A
+- [x] 58 LD E,B
+- [x] 59 LD E,C
+- [x] 5A LD E,D
+- [x] 5B LD E,E
+- [x] 5C LD E,H
+- [x] 5D LD E,L
+- [x] 5E LD E,(HL)
+- [x] 5F LD E,A
 
 #### 60–6F
-- [ ] 60 LD H,B
-- [ ] 61 LD H,C
-- [ ] 62 LD H,D
-- [ ] 63 LD H,E
-- [ ] 64 LD H,H
-- [ ] 65 LD H,L
-- [ ] 66 LD H,(HL)
-- [ ] 67 LD H,A
-- [ ] 68 LD L,B
-- [ ] 69 LD L,C
-- [ ] 6A LD L,D
-- [ ] 6B LD L,E
-- [ ] 6C LD L,H
-- [ ] 6D LD L,L
-- [ ] 6E LD L,(HL)
-- [ ] 6F LD L,A
+- [x] 60 LD H,B
+- [x] 61 LD H,C
+- [x] 62 LD H,D
+- [x] 63 LD H,E
+- [x] 64 LD H,H
+- [x] 65 LD H,L
+- [x] 66 LD H,(HL)
+- [x] 67 LD H,A
+- [x] 68 LD L,B
+- [x] 69 LD L,C
+- [x] 6A LD L,D
+- [x] 6B LD L,E
+- [x] 6C LD L,H
+- [x] 6D LD L,L
+- [x] 6E LD L,(HL)
+- [x] 6F LD L,A
 
 #### 70–7F
-- [ ] 70 LD (HL),B
-- [ ] 71 LD (HL),C
-- [ ] 72 LD (HL),D
-- [ ] 73 LD (HL),E
-- [ ] 74 LD (HL),H
-- [ ] 75 LD (HL),L
+- [x] 70 LD (HL),B
+- [x] 71 LD (HL),C
+- [x] 72 LD (HL),D
+- [x] 73 LD (HL),E
+- [x] 74 LD (HL),H
+- [x] 75 LD (HL),L
 - [ ] 76 HALT
-- [ ] 77 LD (HL),A
-- [ ] 78 LD A,B
-- [ ] 79 LD A,C
-- [ ] 7A LD A,D
-- [ ] 7B LD A,E
-- [ ] 7C LD A,H
-- [ ] 7D LD A,L
-- [ ] 7E LD A,(HL)
-- [ ] 7F LD A,A
+- [x] 77 LD (HL),A
+- [x] 78 LD A,B
+- [x] 79 LD A,C
+- [x] 7A LD A,D
+- [x] 7B LD A,E
+- [x] 7C LD A,H
+- [x] 7D LD A,L
+- [x] 7E LD A,(HL)
+- [x] 7F LD A,A
 
 #### 80–8F
 - [ ] 80 ADD A,B
