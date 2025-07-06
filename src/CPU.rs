@@ -250,6 +250,10 @@ impl CPU {
             let new_value = value.wrapping_add(1);
             self.registers.set_hl(new_value);
           },
+          IncDecTarget::SP => {
+            let value = self.sp;
+            self.sp = value.wrapping_add(1);
+          },
           _ => { panic!("TODO: support more targets") }
         }
         self.pc.wrapping_add(1)

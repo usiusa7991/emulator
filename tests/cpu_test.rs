@@ -1395,3 +1395,31 @@ fn ld_hlm_a() {
     assert_eq!(cpu.registers.get_hl(), 0xFFFF); // 0x0000 - 1 = 0xFFFF
     assert_eq!(cpu.pc, 0x11);
 }
+
+#[test]
+fn inc_sp() {
+    let mut cpu = CPU::new();
+    // 1. 通常のインクリメント
+    cpu.sp = 0x1234;
+    cpu.bus.write_byte(0x00, 0x33); // INC SP
+    cpu.step();
+    assert_eq!(cpu.sp, 0x1235);
+    assert_eq!(cpu.pc, 0x01);
+    // フラグは変化しない（全てfalseのまま）
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+    assert!(!cpu.registers.f.carry);
+
+    // 2. アンダーフローのテスト
+    cpu.sp = 0xFFFF;
+    cpu.pc = 0x10;
+    cpu.bus.write_byte(0x10, 0x33); // INC SP
+    cpu.step();
+    assert_eq!(cpu.sp, 0x0000);
+    // フラグは変化しない
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+    assert!(!cpu.registers.f.carry);
+}

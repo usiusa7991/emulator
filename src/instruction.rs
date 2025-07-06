@@ -150,6 +150,7 @@ impl Instruction {
       0x30 => Some(Instruction::JR(JumpRelativeConditions::NoCarryFlag)),
       0x31 => Some(Instruction::LD(LoadType::TwoByte(LoadTwoByteTarget::SP, LoadTwoByteSource::D16))),
       0x32 => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::HLIM, LoadByteSource::A))),
+      0x33 => Some(Instruction::INC(IncDecTarget::SP)),
       _ => None
     }
   }
