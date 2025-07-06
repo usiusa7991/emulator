@@ -113,6 +113,12 @@ impl CPU {
               LoadByteSource::BCI => self.bus.read_byte(self.registers.get_bc()),
               LoadByteSource::DEI => self.bus.read_byte(self.registers.get_de()),
               LoadByteSource::HLI => self.bus.read_byte(self.registers.get_hl()),
+              LoadByteSource::HLP => {
+                let hl_value = self.registers.get_hl();
+                self.registers.set_hl(hl_value.wrapping_add(1));
+                self.bus.read_byte(hl_value)
+              },
+
               _ => { panic!("TODO: implement other sources") }
             };
             match target {

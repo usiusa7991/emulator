@@ -1141,3 +1141,29 @@ fn add_hl_hl() {
     // Nフラグはクリア
     assert!(!cpu.registers.f.subtract);
 }
+
+#[test]
+fn ld_a_hlp() {
+    let mut cpu = CPU::new();
+    // HL = 0x1234, メモリ[0x1234] = 0xAB
+    cpu.registers.set_hl(0x1234);
+    cpu.bus.write_byte(0x1234, 0xAB);
+    cpu.bus.write_byte(0x00, 0x2A); // LD A, (HL+)
+    cpu.step();
+    // Aに0xABがロードされている
+    assert_eq!(cpu.registers.a, 0xAB);
+    // HLが+1されている
+    assert_eq!(cpu.registers.get_hl(), 0x1235);
+    // PCは1進む
+    assert_eq!(cpu.pc, 0x01);
+
+    // HLが0xFFFFの場合のラップアラウンドも確認
+    cpu.registers.set_hl(0xFFFF);
+    cpu.bus.write_byte(0xFFFF, 0x42);
+    cpu.pc = 0x10;
+    cpu.bus.write_byte(0x10, 0x2A); // LD A, (HL+)
+    cpu.step();
+    assert_eq!(cpu.registers.a, 0x42);
+    assert_eq!(cpu.registers.get_hl(), 0x0000); // 0xFFFF + 1 = 0x0000
+    assert_eq!(cpu.pc, 0x11);
+}
