@@ -54,7 +54,8 @@ pub enum Instruction {
   RRA,
   DAA,
   CPL,
-  SCF
+  SCF,
+  CCF
 }
 
 pub enum AddTarget {
@@ -164,6 +165,7 @@ impl Instruction {
       0x3C => Some(Instruction::INC(IncDecTarget::A)),
       0x3D => Some(Instruction::DEC(IncDecTarget::A)),
       0x3E => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::A, LoadByteSource::D8))),
+      0x3F => Some(Instruction::CCF),
       _ => None
     }
   }

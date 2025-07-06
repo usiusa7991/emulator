@@ -427,6 +427,15 @@ impl CPU {
         );
         self.pc.wrapping_add(1)
       },
+      Instruction::CCF => {
+        self.registers.set_f(
+          None,
+          Some(false),
+          Some(false),
+          Some(!self.registers.f.carry)
+        );
+        self.pc.wrapping_add(1)
+      },
       _ => { /* TODO: support more instructions */ self.pc },
     }
   }
