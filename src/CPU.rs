@@ -309,6 +309,12 @@ impl CPU {
             let new_value = self.dec_16bit(self.registers.get_hl());
             self.registers.set_hl(new_value);
           },
+          IncDecTarget::HLI => {
+            let address = self.registers.get_hl();
+            let value = self.bus.read_byte(address);
+            let new_value = self.dec_8bit(value);
+            self.bus.write_byte(address, new_value);
+          },
           _ => { panic!("TODO: support more targets") }
         }
         self.pc.wrapping_add(1)
