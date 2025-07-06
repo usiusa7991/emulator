@@ -1226,6 +1226,48 @@ fn inc_l() {
     cpu.step();
     assert_eq!(cpu.registers.l, 0x00);
     assert!(cpu.registers.f.zero);
-    assert!(!cpu.registers.f.half_carry);
+    assert!(cpu.registers.f.half_carry);
     assert!(!cpu.registers.f.subtract);
+}
+
+#[test]
+fn dec_l() {
+    let mut cpu = CPU::new();
+    // 1. 通常のデクリメント
+    cpu.registers.l = 0x02;
+    cpu.bus.write_byte(0x00, 0x2D); // DEC L
+    cpu.step();
+    assert_eq!(cpu.registers.l, 0x01);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.half_carry);
+    assert!(cpu.registers.f.subtract);
+
+    // 2. ハーフキャリー発生（下位4ビットが0のとき）
+    cpu.pc = 0;
+    cpu.registers.l = 0x10;
+    cpu.bus.write_byte(0x00, 0x2D); // DEC L
+    cpu.step();
+    assert_eq!(cpu.registers.l, 0x0F);
+    assert!(cpu.registers.f.half_carry);
+    assert!(cpu.registers.f.subtract);
+
+    // 3. ゼロフラグ
+    cpu.pc = 0;
+    cpu.registers.l = 0x01;
+    cpu.bus.write_byte(0x00, 0x2D); // DEC L
+    cpu.step();
+    assert_eq!(cpu.registers.l, 0x00);
+    assert!(cpu.registers.f.zero);
+    assert!(cpu.registers.f.subtract);
+
+    // 4. アンダーフロー（0x00→0xFF）
+    cpu.pc = 0;
+    cpu.registers.l = 0x00;
+    cpu.bus.write_byte(0x00, 0x2D); // DEC L
+    cpu.step();
+    assert_eq!(cpu.registers.l, 0xFF);
+    assert!(!cpu.registers.f.zero);
+    assert!(cpu.registers.f.subtract);
+    assert!(cpu.registers.f.half_carry);
 }
