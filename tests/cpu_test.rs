@@ -1516,3 +1516,37 @@ fn ld_hli_d8() {
     // PCは2進む
     assert_eq!(cpu.pc, 0x02);
 }
+
+#[test]
+fn scf() {
+    let mut cpu = CPU::new();
+    // 1. Cフラグが0のとき
+    cpu.registers.f.carry = false;
+    cpu.registers.f.zero = true; // Zフラグは変化しない
+    cpu.registers.f.subtract = true; // Nフラグはクリアされる
+    cpu.registers.f.half_carry = true; // Hフラグはクリアされる
+    cpu.bus.write_byte(0x00, 0x37); // SCF
+    cpu.step();
+    // Cフラグがセットされる
+    assert!(cpu.registers.f.carry);
+    // N/Hフラグはクリア
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+    // Zフラグは変化しない
+    assert!(cpu.registers.f.zero);
+    assert_eq!(cpu.pc, 0x01);
+
+    // 2. すでにCフラグが1でも再度セットされるだけ
+    cpu.pc = 0;
+    cpu.registers.f.carry = true;
+    cpu.registers.f.zero = false;
+    cpu.registers.f.subtract = true;
+    cpu.registers.f.half_carry = true;
+    cpu.bus.write_byte(0x00, 0x37); // SCF
+    cpu.step();
+    assert!(cpu.registers.f.carry);
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+    assert!(!cpu.registers.f.zero);
+    assert_eq!(cpu.pc, 0x01);
+}
