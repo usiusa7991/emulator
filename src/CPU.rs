@@ -116,6 +116,12 @@ impl CPU {
           LoadType::Byte(target, source) => {
             let source_value = match source {
               LoadByteSource::A => self.registers.a,
+              LoadByteSource::B => self.registers.b,
+              LoadByteSource::C => self.registers.c,
+              LoadByteSource::D => self.registers.d,
+              LoadByteSource::E => self.registers.e,
+              LoadByteSource::H => self.registers.h,
+              LoadByteSource::L => self.registers.l,
               LoadByteSource::D8 => self.read_next_byte(),
               LoadByteSource::BCI => self.bus.read_byte(self.registers.get_bc()),
               LoadByteSource::DEI => self.bus.read_byte(self.registers.get_de()),

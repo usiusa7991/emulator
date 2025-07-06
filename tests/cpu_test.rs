@@ -1810,3 +1810,338 @@ fn ccf() {
     assert!(!cpu.registers.f.zero);
     assert_eq!(cpu.pc, 0x01);
 }
+
+#[test]
+fn ld_b_group() {
+    let mut cpu = CPU::new();
+    // LD B, B
+    cpu.registers.b = 0x12;
+    cpu.bus.write_byte(0x00, 0x40); // LD B, B
+    cpu.step();
+    assert_eq!(cpu.registers.b, 0x12);
+    // LD B, C
+    cpu.registers.c = 0x34;
+    cpu.bus.write_byte(0x01, 0x41); // LD B, C
+    cpu.pc = 0x01;
+    cpu.step();
+    assert_eq!(cpu.registers.b, 0x34);
+    // LD B, D
+    cpu.registers.d = 0x56;
+    cpu.bus.write_byte(0x02, 0x42); // LD B, D
+    cpu.pc = 0x02;
+    cpu.step();
+    assert_eq!(cpu.registers.b, 0x56);
+    // LD B, E
+    cpu.registers.e = 0x78;
+    cpu.bus.write_byte(0x03, 0x43); // LD B, E
+    cpu.pc = 0x03;
+    cpu.step();
+    assert_eq!(cpu.registers.b, 0x78);
+    // LD B, H
+    cpu.registers.h = 0x9A;
+    cpu.bus.write_byte(0x04, 0x44); // LD B, H
+    cpu.pc = 0x04;
+    cpu.step();
+    assert_eq!(cpu.registers.b, 0x9A);
+    // LD B, L
+    cpu.registers.l = 0xBC;
+    cpu.bus.write_byte(0x05, 0x45); // LD B, L
+    cpu.pc = 0x05;
+    cpu.step();
+    assert_eq!(cpu.registers.b, 0xBC);
+    // LD B, (HL)
+    cpu.registers.set_hl(0x2000);
+    cpu.bus.write_byte(0x2000, 0xDE);
+    cpu.bus.write_byte(0x06, 0x46); // LD B, (HL)
+    cpu.pc = 0x06;
+    cpu.step();
+    assert_eq!(cpu.registers.b, 0xDE);
+    // LD B, A
+    cpu.registers.a = 0xF0;
+    cpu.bus.write_byte(0x07, 0x47); // LD B, A
+    cpu.pc = 0x07;
+    cpu.step();
+    assert_eq!(cpu.registers.b, 0xF0);
+    // LD (HL), B
+    cpu.registers.set_hl(0x3000);
+    cpu.registers.b = 0x55;
+    cpu.bus.write_byte(0x08, 0x70); // LD (HL), B
+    cpu.pc = 0x08;
+    cpu.step();
+    assert_eq!(cpu.bus.read_byte(0x3000), 0x55);
+    // LD A, B
+    cpu.registers.b = 0x77;
+    cpu.bus.write_byte(0x09, 0x78); // LD A, B
+    cpu.pc = 0x09;
+    cpu.step();
+    assert_eq!(cpu.registers.a, 0x77);
+}
+
+#[test]
+fn ld_c_group() {
+    let mut cpu = CPU::new();
+    // LD C, B
+    cpu.registers.b = 0x12;
+    cpu.bus.write_byte(0x00, 0x48); // LD C, B
+    cpu.step();
+    assert_eq!(cpu.registers.c, 0x12);
+    // LD C, C
+    cpu.registers.c = 0x34;
+    cpu.bus.write_byte(0x01, 0x49); // LD C, C
+    cpu.pc = 0x01;
+    cpu.step();
+    assert_eq!(cpu.registers.c, 0x34);
+    // LD C, D
+    cpu.registers.d = 0x56;
+    cpu.bus.write_byte(0x02, 0x4A); // LD C, D
+    cpu.pc = 0x02;
+    cpu.step();
+    assert_eq!(cpu.registers.c, 0x56);
+    // LD C, E
+    cpu.registers.e = 0x78;
+    cpu.bus.write_byte(0x03, 0x4B); // LD C, E
+    cpu.pc = 0x03;
+    cpu.step();
+    assert_eq!(cpu.registers.c, 0x78);
+    // LD C, H
+    cpu.registers.h = 0x9A;
+    cpu.bus.write_byte(0x04, 0x4C); // LD C, H
+    cpu.pc = 0x04;
+    cpu.step();
+    assert_eq!(cpu.registers.c, 0x9A);
+    // LD C, L
+    cpu.registers.l = 0xBC;
+    cpu.bus.write_byte(0x05, 0x4D); // LD C, L
+    cpu.pc = 0x05;
+    cpu.step();
+    assert_eq!(cpu.registers.c, 0xBC);
+    // LD C, (HL)
+    cpu.registers.set_hl(0x2100);
+    cpu.bus.write_byte(0x2100, 0xDE);
+    cpu.bus.write_byte(0x06, 0x4E); // LD C, (HL)
+    cpu.pc = 0x06;
+    cpu.step();
+    assert_eq!(cpu.registers.c, 0xDE);
+    // LD C, A
+    cpu.registers.a = 0xF0;
+    cpu.bus.write_byte(0x07, 0x4F); // LD C, A
+    cpu.pc = 0x07;
+    cpu.step();
+    assert_eq!(cpu.registers.c, 0xF0);
+    // LD (HL), C
+    cpu.registers.set_hl(0x3100);
+    cpu.registers.c = 0x55;
+    cpu.bus.write_byte(0x08, 0x71); // LD (HL), C
+    cpu.pc = 0x08;
+    cpu.step();
+    assert_eq!(cpu.bus.read_byte(0x3100), 0x55);
+    // LD A, C
+    cpu.registers.c = 0x77;
+    cpu.bus.write_byte(0x09, 0x79); // LD A, C
+    cpu.pc = 0x09;
+    cpu.step();
+    assert_eq!(cpu.registers.a, 0x77);
+}
+
+#[test]
+fn ld_d_group() {
+    let mut cpu = CPU::new();
+    // LD D, B
+    cpu.registers.b = 0x12;
+    cpu.bus.write_byte(0x00, 0x50); cpu.step(); assert_eq!(cpu.registers.d, 0x12);
+    // LD D, C
+    cpu.registers.c = 0x34;
+    cpu.bus.write_byte(0x01, 0x51); cpu.pc = 0x01; cpu.step(); assert_eq!(cpu.registers.d, 0x34);
+    // LD D, D
+    cpu.registers.d = 0x56;
+    cpu.bus.write_byte(0x02, 0x52); cpu.pc = 0x02; cpu.step(); assert_eq!(cpu.registers.d, 0x56);
+    // LD D, E
+    cpu.registers.e = 0x78;
+    cpu.bus.write_byte(0x03, 0x53); cpu.pc = 0x03; cpu.step(); assert_eq!(cpu.registers.d, 0x78);
+    // LD D, H
+    cpu.registers.h = 0x9A;
+    cpu.bus.write_byte(0x04, 0x54); cpu.pc = 0x04; cpu.step(); assert_eq!(cpu.registers.d, 0x9A);
+    // LD D, L
+    cpu.registers.l = 0xBC;
+    cpu.bus.write_byte(0x05, 0x55); cpu.pc = 0x05; cpu.step(); assert_eq!(cpu.registers.d, 0xBC);
+    // LD D, (HL)
+    cpu.registers.set_hl(0x2200);
+    cpu.bus.write_byte(0x2200, 0xDE);
+    cpu.bus.write_byte(0x06, 0x56); cpu.pc = 0x06; cpu.step(); assert_eq!(cpu.registers.d, 0xDE);
+    // LD D, A
+    cpu.registers.a = 0xF0;
+    cpu.bus.write_byte(0x07, 0x57); cpu.pc = 0x07; cpu.step(); assert_eq!(cpu.registers.d, 0xF0);
+    // LD (HL), D
+    cpu.registers.set_hl(0x3200);
+    cpu.registers.d = 0x55;
+    cpu.bus.write_byte(0x08, 0x72); cpu.pc = 0x08; cpu.step(); assert_eq!(cpu.bus.read_byte(0x3200), 0x55);
+    // LD A, D
+    cpu.registers.d = 0x77;
+    cpu.bus.write_byte(0x09, 0x7A); cpu.pc = 0x09; cpu.step(); assert_eq!(cpu.registers.a, 0x77);
+}
+
+#[test]
+fn ld_e_group() {
+    let mut cpu = CPU::new();
+    // LD E, B
+    cpu.registers.b = 0x12;
+    cpu.bus.write_byte(0x00, 0x58); cpu.step(); assert_eq!(cpu.registers.e, 0x12);
+    // LD E, C
+    cpu.registers.c = 0x34;
+    cpu.bus.write_byte(0x01, 0x59); cpu.pc = 0x01; cpu.step(); assert_eq!(cpu.registers.e, 0x34);
+    // LD E, D
+    cpu.registers.d = 0x56;
+    cpu.bus.write_byte(0x02, 0x5A); cpu.pc = 0x02; cpu.step(); assert_eq!(cpu.registers.e, 0x56);
+    // LD E, E
+    cpu.registers.e = 0x78;
+    cpu.bus.write_byte(0x03, 0x5B); cpu.pc = 0x03; cpu.step(); assert_eq!(cpu.registers.e, 0x78);
+    // LD E, H
+    cpu.registers.h = 0x9A;
+    cpu.bus.write_byte(0x04, 0x5C); cpu.pc = 0x04; cpu.step(); assert_eq!(cpu.registers.e, 0x9A);
+    // LD E, L
+    cpu.registers.l = 0xBC;
+    cpu.bus.write_byte(0x05, 0x5D); cpu.pc = 0x05; cpu.step(); assert_eq!(cpu.registers.e, 0xBC);
+    // LD E, (HL)
+    cpu.registers.set_hl(0x2300);
+    cpu.bus.write_byte(0x2300, 0xDE);
+    cpu.bus.write_byte(0x06, 0x5E); cpu.pc = 0x06; cpu.step(); assert_eq!(cpu.registers.e, 0xDE);
+    // LD E, A
+    cpu.registers.a = 0xF0;
+    cpu.bus.write_byte(0x07, 0x5F); cpu.pc = 0x07; cpu.step(); assert_eq!(cpu.registers.e, 0xF0);
+    // LD (HL), E
+    cpu.registers.set_hl(0x3300);
+    cpu.registers.e = 0x55;
+    cpu.bus.write_byte(0x08, 0x73); cpu.pc = 0x08; cpu.step(); assert_eq!(cpu.bus.read_byte(0x3300), 0x55);
+    // LD A, E
+    cpu.registers.e = 0x77;
+    cpu.bus.write_byte(0x09, 0x7B); cpu.pc = 0x09; cpu.step(); assert_eq!(cpu.registers.a, 0x77);
+}
+
+#[test]
+fn ld_h_group() {
+    let mut cpu = CPU::new();
+    // LD H, B
+    cpu.registers.b = 0x12;
+    cpu.bus.write_byte(0x00, 0x60); cpu.step(); assert_eq!(cpu.registers.h, 0x12);
+    // LD H, C
+    cpu.registers.c = 0x34;
+    cpu.bus.write_byte(0x01, 0x61); cpu.pc = 0x01; cpu.step(); assert_eq!(cpu.registers.h, 0x34);
+    // LD H, D
+    cpu.registers.d = 0x56;
+    cpu.bus.write_byte(0x02, 0x62); cpu.pc = 0x02; cpu.step(); assert_eq!(cpu.registers.h, 0x56);
+    // LD H, E
+    cpu.registers.e = 0x78;
+    cpu.bus.write_byte(0x03, 0x63); cpu.pc = 0x03; cpu.step(); assert_eq!(cpu.registers.h, 0x78);
+    // LD H, H
+    cpu.registers.h = 0x9A;
+    cpu.bus.write_byte(0x04, 0x64); cpu.pc = 0x04; cpu.step(); assert_eq!(cpu.registers.h, 0x9A);
+    // LD H, L
+    cpu.registers.l = 0xBC;
+    cpu.bus.write_byte(0x05, 0x65); cpu.pc = 0x05; cpu.step(); assert_eq!(cpu.registers.h, 0xBC);
+    // LD H, (HL)
+    cpu.registers.set_hl(0x2400);
+    cpu.bus.write_byte(0x2400, 0xDE);
+    cpu.bus.write_byte(0x06, 0x66); cpu.pc = 0x06; cpu.step(); assert_eq!(cpu.registers.h, 0xDE);
+    // LD H, A
+    cpu.registers.a = 0xF0;
+    cpu.bus.write_byte(0x07, 0x67); cpu.pc = 0x07; cpu.step(); assert_eq!(cpu.registers.h, 0xF0);
+    // LD (HL), H
+    cpu.registers.set_hl(0x3400); // H自体の値を入れるため注意
+    cpu.bus.write_byte(0x08, 0x74); cpu.pc = 0x08; cpu.step(); assert_eq!(cpu.bus.read_byte(0x3400), 0x34);
+    // LD A, H
+    cpu.registers.h = 0x77;
+    cpu.bus.write_byte(0x09, 0x7C); cpu.pc = 0x09; cpu.step(); assert_eq!(cpu.registers.a, 0x77);
+}
+
+#[test]
+fn ld_l_group() {
+    let mut cpu = CPU::new();
+    // LD L, B
+    cpu.registers.b = 0x12;
+    cpu.bus.write_byte(0x00, 0x68); cpu.step(); assert_eq!(cpu.registers.l, 0x12);
+    // LD L, C
+    cpu.registers.c = 0x34;
+    cpu.bus.write_byte(0x01, 0x69); cpu.pc = 0x01; cpu.step(); assert_eq!(cpu.registers.l, 0x34);
+    // LD L, D
+    cpu.registers.d = 0x56;
+    cpu.bus.write_byte(0x02, 0x6A); cpu.pc = 0x02; cpu.step(); assert_eq!(cpu.registers.l, 0x56);
+    // LD L, E
+    cpu.registers.e = 0x78;
+    cpu.bus.write_byte(0x03, 0x6B); cpu.pc = 0x03; cpu.step(); assert_eq!(cpu.registers.l, 0x78);
+    // LD L, H
+    cpu.registers.h = 0x9A;
+    cpu.bus.write_byte(0x04, 0x6C); cpu.pc = 0x04; cpu.step(); assert_eq!(cpu.registers.l, 0x9A);
+    // LD L, L
+    cpu.registers.l = 0xBC;
+    cpu.bus.write_byte(0x05, 0x6D); cpu.pc = 0x05; cpu.step(); assert_eq!(cpu.registers.l, 0xBC);
+    // LD L, (HL)
+    cpu.registers.set_hl(0x2500);
+    cpu.bus.write_byte(0x2500, 0xDE);
+    cpu.bus.write_byte(0x06, 0x6E); cpu.pc = 0x06; cpu.step(); assert_eq!(cpu.registers.l, 0xDE);
+    // LD L, A
+    cpu.registers.a = 0xF0;
+    cpu.bus.write_byte(0x07, 0x6F); cpu.pc = 0x07; cpu.step(); assert_eq!(cpu.registers.l, 0xF0);
+    // LD (HL), L
+    cpu.registers.set_hl(0x3555); // HL=0x3555　（HL自身の値を変えようとしてる）
+    cpu.bus.write_byte(0x08, 0x75); cpu.pc = 0x08; cpu.step(); assert_eq!(cpu.bus.read_byte(0x3555), 0x55);
+    // LD A, L
+    cpu.registers.l = 0x77;
+    cpu.bus.write_byte(0x09, 0x7D); cpu.pc = 0x09; cpu.step(); assert_eq!(cpu.registers.a, 0x77);
+}
+
+#[test]
+fn ld_hli_group() {
+    let mut cpu = CPU::new();
+    // LD (HL), B
+    cpu.registers.set_hl(0x3600);
+    cpu.registers.b = 0x12;
+    cpu.bus.write_byte(0x00, 0x70); cpu.step(); assert_eq!(cpu.bus.read_byte(0x3600), 0x12);
+    // LD (HL), C
+    cpu.registers.c = 0x34;
+    cpu.bus.write_byte(0x01, 0x71); cpu.pc = 0x01; cpu.step(); assert_eq!(cpu.bus.read_byte(0x3600), 0x34);
+    // LD (HL), D
+    cpu.registers.d = 0x56;
+    cpu.bus.write_byte(0x02, 0x72); cpu.pc = 0x02; cpu.step(); assert_eq!(cpu.bus.read_byte(0x3600), 0x56);
+    // LD (HL), E
+    cpu.registers.e = 0x78;
+    cpu.bus.write_byte(0x03, 0x73); cpu.pc = 0x03; cpu.step(); assert_eq!(cpu.bus.read_byte(0x3600), 0x78);
+    // LD (HL), H
+    // H自体の値を入れるので注意
+    cpu.bus.write_byte(0x04, 0x74); cpu.pc = 0x04; cpu.step(); assert_eq!(cpu.bus.read_byte(0x3600), 0x36);
+    // LD (HL), L
+    // L自体の値を入れるので注意
+    cpu.bus.write_byte(0x05, 0x75); cpu.pc = 0x05; cpu.step(); assert_eq!(cpu.bus.read_byte(0x3600), 0x00);
+    // LD (HL), A
+    cpu.registers.a = 0xF0;
+    cpu.bus.write_byte(0x06, 0x77); cpu.pc = 0x06; cpu.step(); assert_eq!(cpu.bus.read_byte(0x3600), 0xF0);
+}
+
+#[test]
+fn ld_a_group() {
+    let mut cpu = CPU::new();
+    // LD A, B
+    cpu.registers.b = 0x12;
+    cpu.bus.write_byte(0x00, 0x78); cpu.step(); assert_eq!(cpu.registers.a, 0x12);
+    // LD A, C
+    cpu.registers.c = 0x34;
+    cpu.bus.write_byte(0x01, 0x79); cpu.pc = 0x01; cpu.step(); assert_eq!(cpu.registers.a, 0x34);
+    // LD A, D
+    cpu.registers.d = 0x56;
+    cpu.bus.write_byte(0x02, 0x7A); cpu.pc = 0x02; cpu.step(); assert_eq!(cpu.registers.a, 0x56);
+    // LD A, E
+    cpu.registers.e = 0x78;
+    cpu.bus.write_byte(0x03, 0x7B); cpu.pc = 0x03; cpu.step(); assert_eq!(cpu.registers.a, 0x78);
+    // LD A, H
+    cpu.registers.h = 0x9A;
+    cpu.bus.write_byte(0x04, 0x7C); cpu.pc = 0x04; cpu.step(); assert_eq!(cpu.registers.a, 0x9A);
+    // LD A, L
+    cpu.registers.l = 0xBC;
+    cpu.bus.write_byte(0x05, 0x7D); cpu.pc = 0x05; cpu.step(); assert_eq!(cpu.registers.a, 0xBC);
+    // LD A, (HL)
+    cpu.registers.set_hl(0x3700);
+    cpu.bus.write_byte(0x3700, 0xDE);
+    cpu.bus.write_byte(0x06, 0x7E); cpu.pc = 0x06; cpu.step(); assert_eq!(cpu.registers.a, 0xDE);
+    // LD A, A
+    cpu.registers.a = 0xF0;
+    cpu.bus.write_byte(0x07, 0x7F); cpu.pc = 0x07; cpu.step(); assert_eq!(cpu.registers.a, 0xF0);
+}
