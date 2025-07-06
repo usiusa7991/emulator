@@ -1057,3 +1057,42 @@ fn daa() {
     assert!(!cpu.registers.f.half_carry);
     assert!(!cpu.registers.f.carry);
 }
+
+#[test]
+fn test_jr_z_s8() {
+    // 1. Zeroフラグが立っている場合（ジャンプする）
+    let mut cpu = CPU::new();
+    cpu.pc = 0x1000;
+    cpu.registers.f.zero = true;
+    cpu.bus.write_byte(0x1000, 0x28); // JR Z, s8
+    cpu.bus.write_byte(0x1001, 0x05); // +5
+    cpu.step();
+    assert_eq!(cpu.pc, 0x1000 + 2 + 5); // 0x1007
+
+    // 2. Zeroフラグが立っていない場合（ジャンプしない）
+    let mut cpu = CPU::new();
+    cpu.pc = 0x2000;
+    cpu.registers.f.zero = false;
+    cpu.bus.write_byte(0x2000, 0x28); // JR Z, s8
+    cpu.bus.write_byte(0x2001, 0x05); // +5
+    cpu.step();
+    assert_eq!(cpu.pc, 0x2002); // 通常通り次命令へ
+
+    // 3. 負のオフセット（-2）でジャンプ
+    let mut cpu = CPU::new();
+    cpu.pc = 0x3000;
+    cpu.registers.f.zero = true;
+    cpu.bus.write_byte(0x3000, 0x28); // JR Z, s8
+    cpu.bus.write_byte(0x3001, 0xFE); // -2（0xFE as i8 = -2）
+    cpu.step();
+    assert_eq!(cpu.pc, 0x3000 + 2 - 2); // 0x3000
+
+    // 4. オフセット0（ジャンプ先は次命令と同じ）
+    let mut cpu = CPU::new();
+    cpu.pc = 0x4000;
+    cpu.registers.f.zero = true;
+    cpu.bus.write_byte(0x4000, 0x28); // JR Z, s8
+    cpu.bus.write_byte(0x4001, 0x00); // 0
+    cpu.step();
+    assert_eq!(cpu.pc, 0x4002); // 0x4000 + 2 + 0
+}

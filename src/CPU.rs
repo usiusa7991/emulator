@@ -58,7 +58,7 @@ impl CPU {
     }
   }
 
-  fn execute(&mut self, instruction: Instruction) -> u16 {
+  pub fn execute(&mut self, instruction: Instruction) -> u16 {
     match instruction {
       Instruction::NOP => self.pc.wrapping_add(1),
       Instruction::ADD(target, source) => {
@@ -91,7 +91,10 @@ impl CPU {
           },
           JumpRelativeConditions::NoZeroFlag => {
             self.registers.f.zero == false
-          }
+          },
+          JumpRelativeConditions::ZeroFlag => {
+            self.registers.f.zero == true
+          },
         };
 
         if condition_flag {
