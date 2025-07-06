@@ -1757,3 +1757,22 @@ fn dec_a() {
     assert!(!cpu.registers.f.zero);
     assert!(cpu.registers.f.subtract);
 }
+
+#[test]
+fn ld_a_d8() {
+    let mut cpu = CPU::new();
+    // LD A, 0x42 命令
+    cpu.bus.write_byte(0x00, 0x3E); // LD A, d8
+    cpu.bus.write_byte(0x01, 0x42); // d8 = 0x42
+    cpu.step();
+    assert_eq!(cpu.registers.a, 0x42);
+    assert_eq!(cpu.pc, 0x02);
+
+    // 2. 0x00のロード
+    cpu.pc = 0x10;
+    cpu.bus.write_byte(0x10, 0x3E); // LD A, d8
+    cpu.bus.write_byte(0x11, 0x00); // d8 = 0x00
+    cpu.step();
+    assert_eq!(cpu.registers.a, 0x00);
+    assert_eq!(cpu.pc, 0x12);
+}
