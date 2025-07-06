@@ -14,11 +14,11 @@ pub enum JumpRelativeConditions {
 }
 
 pub enum LoadByteTarget {
-  A, B, C, D, E, H, L, BCI, DEI, HLI, HLP
+  A, B, C, D, E, H, L, BCI, DEI, HLI, HLIP
 }
 
 pub enum LoadByteSource {
-  A, B, C, D, E, H, L, D8, BCI, DEI, HLI, HLP
+  A, B, C, D, E, H, L, D8, BCI, DEI, HLI, HLIP
 }
 
 pub enum LoadTwoByteTarget {
@@ -133,7 +133,7 @@ impl Instruction {
       0x1F => Some(Instruction::RRA),
       0x20 => Some(Instruction::JR(JumpRelativeConditions::NoZeroFlag)),
       0x21 => Some(Instruction::LD(LoadType::TwoByte(LoadTwoByteTarget::HL, LoadTwoByteSource::D16))),
-      0x22 => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::HLP, LoadByteSource::A))),
+      0x22 => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::HLIP, LoadByteSource::A))),
       0x23 => Some(Instruction::INC(IncDecTarget::HL)),
       0x24 => Some(Instruction::INC(IncDecTarget::H)),
       0x25 => Some(Instruction::DEC(IncDecTarget::H)),
@@ -141,7 +141,7 @@ impl Instruction {
       0x27 => Some(Instruction::DAA),
       0x28 => Some(Instruction::JR(JumpRelativeConditions::ZeroFlag)),
       0x29 => Some(Instruction::ADD(AddTarget::HL, AddSource::HL)),
-      0x2A => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::A, LoadByteSource::HLP))),
+      0x2A => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::A, LoadByteSource::HLIP))),
       0x2B => Some(Instruction::DEC(IncDecTarget::HL)),
       0x2C => Some(Instruction::INC(IncDecTarget::L)),
       0x2D => Some(Instruction::DEC(IncDecTarget::L)),

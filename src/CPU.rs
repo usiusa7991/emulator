@@ -116,7 +116,7 @@ impl CPU {
               LoadByteSource::BCI => self.bus.read_byte(self.registers.get_bc()),
               LoadByteSource::DEI => self.bus.read_byte(self.registers.get_de()),
               LoadByteSource::HLI => self.bus.read_byte(self.registers.get_hl()),
-              LoadByteSource::HLP => {
+              LoadByteSource::HLIP => {
                 let hl_value = self.registers.get_hl();
                 self.registers.set_hl(hl_value.wrapping_add(1));
                 self.bus.read_byte(hl_value)
@@ -135,7 +135,7 @@ impl CPU {
               LoadByteTarget::BCI => self.bus.write_byte(self.registers.get_bc(), source_value),
               LoadByteTarget::DEI => self.bus.write_byte(self.registers.get_de(), source_value),
               LoadByteTarget::HLI => self.bus.write_byte(self.registers.get_hl(), source_value),
-              LoadByteTarget::HLP => {
+              LoadByteTarget::HLIP => {
                 let hl_value = self.registers.get_hl();
                 self.bus.write_byte(self.registers.get_hl(), source_value);
                 self.registers.set_hl(hl_value.wrapping_add(1))
