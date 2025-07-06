@@ -125,7 +125,11 @@ impl CPU {
                 self.registers.set_hl(hl_value.wrapping_add(1));
                 self.bus.read_byte(hl_value)
               },
-
+              LoadByteSource::HLIM => {
+                let hl_value = self.registers.get_hl();
+                self.registers.set_hl(hl_value.wrapping_sub(1));
+                self.bus.read_byte(hl_value)
+              },
               _ => { panic!("TODO: implement other sources") }
             };
             match target {

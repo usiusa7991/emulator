@@ -19,7 +19,7 @@ pub enum LoadByteTarget {
 }
 
 pub enum LoadByteSource {
-  A, B, C, D, E, H, L, D8, BCI, DEI, HLI, HLIP
+  A, B, C, D, E, H, L, D8, BCI, DEI, HLI, HLIP, HLIM
 }
 
 pub enum LoadTwoByteTarget {
@@ -159,6 +159,7 @@ impl Instruction {
       0x37 => Some(Instruction::SCF),
       0x38 => Some(Instruction::JR(JumpRelativeConditions::CarryFlag)),
       0x39 => Some(Instruction::ADD(AddTarget::HL, AddSource::SP)),
+      0x3A => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::A, LoadByteSource::HLIM))),
       _ => None
     }
   }

@@ -1628,3 +1628,29 @@ fn add_hl_sp() {
     // Nフラグはクリア
     assert!(!cpu.registers.f.subtract);
 }
+
+#[test]
+fn ld_a_hlm() {
+    let mut cpu = CPU::new();
+    // 1. 通常のロードとHLデクリメント
+    cpu.registers.set_hl(0x1234);
+    cpu.bus.write_byte(0x1234, 0xAB);
+    cpu.bus.write_byte(0x00, 0x3A); // LD A, (HL-)
+    cpu.step();
+    // Aに0xABがロードされていること
+    assert_eq!(cpu.registers.a, 0xAB);
+    // HLが-1されている
+    assert_eq!(cpu.registers.get_hl(), 0x1233);
+    // PCは1進む
+    assert_eq!(cpu.pc, 0x01);
+
+    // 2. HLが0x0000の場合のラップアラウンド
+    cpu.registers.set_hl(0x0000);
+    cpu.bus.write_byte(0x0000, 0x42);
+    cpu.pc = 0x10;
+    cpu.bus.write_byte(0x10, 0x3A); // LD A, (HL-)
+    cpu.step();
+    assert_eq!(cpu.registers.a, 0x42);
+    assert_eq!(cpu.registers.get_hl(), 0xFFFF); // 0x0000 - 1 = 0xFFFF
+    assert_eq!(cpu.pc, 0x11);
+}
