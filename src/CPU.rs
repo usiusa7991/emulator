@@ -65,7 +65,8 @@ impl CPU {
         let source_value = match source {
           AddSource::BC => self.registers.get_bc(),
           AddSource::DE => self.registers.get_de(),
-          AddSource::HL => self.registers.get_hl()
+          AddSource::HL => self.registers.get_hl(),
+          AddSource::SP => self.sp
         };
         match target {
           AddTarget::HL => self.add_to_hl(source_value),
