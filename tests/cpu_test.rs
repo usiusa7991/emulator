@@ -1352,3 +1352,20 @@ fn jr_nc_s8() {
     cpu.step();
     assert_eq!(cpu.pc, 0x3000 + 2 - 2); // 0x3000
 }
+
+#[test]
+fn ld_sp_d16() {
+    let mut cpu = CPU::new();
+    // LD SP, 0xBEEF 命令
+    // 0x31: LD SP, d16 のオペコード
+    // 0xEF: 下位バイト
+    // 0xBE: 上位バイト
+    cpu.bus.write_byte(0x00, 0x31); // LD SP, d16
+    cpu.bus.write_byte(0x01, 0xEF); // LSB
+    cpu.bus.write_byte(0x02, 0xBE); // MSB
+
+    cpu.step();
+
+    assert_eq!(cpu.sp, 0xBEEF);
+    assert_eq!(cpu.pc, 0x03);
+}

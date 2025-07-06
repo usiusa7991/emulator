@@ -157,6 +157,10 @@ impl CPU {
               LoadTwoByteTarget::BC => self.registers.set_bc(source_value),
               LoadTwoByteTarget::DE => self.registers.set_de(source_value),
               LoadTwoByteTarget::HL => self.registers.set_hl(source_value),
+              LoadTwoByteTarget::SP => {
+                let value = self.read_immediate_16bit();
+                self.sp = value;
+              },
               LoadTwoByteTarget::A16 => {
                 let address = self.read_immediate_16bit();
 
