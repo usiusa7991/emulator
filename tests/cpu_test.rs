@@ -1195,3 +1195,37 @@ fn dec_hl() {
     assert!(!cpu.registers.f.half_carry);
     assert!(!cpu.registers.f.carry);
 }
+
+#[test]
+fn inc_l() {
+    let mut cpu = CPU::new();
+    // 1. 通常のインクリメント
+    cpu.registers.l = 0x01;
+    cpu.bus.write_byte(0x00, 0x2C); // INC L
+    cpu.step();
+    assert_eq!(cpu.registers.l, 0x02);
+    assert_eq!(cpu.pc, 0x01);
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.half_carry);
+    assert!(!cpu.registers.f.subtract);
+
+    // 2. ハーフキャリー
+    cpu.pc = 0;
+    cpu.registers.l = 0x0F;
+    cpu.bus.write_byte(0x00, 0x2C); // INC L
+    cpu.step();
+    assert_eq!(cpu.registers.l, 0x10);
+    assert!(cpu.registers.f.half_carry);
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+
+    // 3. ゼロフラグ
+    cpu.pc = 0;
+    cpu.registers.l = 0xFF;
+    cpu.bus.write_byte(0x00, 0x2C); // INC L
+    cpu.step();
+    assert_eq!(cpu.registers.l, 0x00);
+    assert!(cpu.registers.f.zero);
+    assert!(!cpu.registers.f.half_carry);
+    assert!(!cpu.registers.f.subtract);
+}
