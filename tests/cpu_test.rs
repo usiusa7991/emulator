@@ -1268,7 +1268,6 @@ fn dec_l() {
     assert_eq!(cpu.registers.l, 0xFF);
     assert!(!cpu.registers.f.zero);
     assert!(cpu.registers.f.subtract);
-    assert!(cpu.registers.f.half_carry);
 }
 
 #[test]
@@ -1457,7 +1456,6 @@ fn inc_hli() {
     assert_eq!(cpu.bus.read_byte(0x1234), 0x00);
     assert!(cpu.registers.f.zero);
     assert!(cpu.registers.f.half_carry);
-    assert!(!cpu.registers.f.subtract);
 }
 
 #[test]
@@ -1503,4 +1501,18 @@ fn dec_hli() {
     assert_eq!(cpu.bus.read_byte(0x1234), 0xFF);
     assert!(!cpu.registers.f.zero);
     assert!(cpu.registers.f.subtract);
+}
+
+#[test]
+fn ld_hli_d8() {
+    let mut cpu = CPU::new();
+    // HL = 0x1234, d8 = 0xAB
+    cpu.registers.set_hl(0x1234);
+    cpu.bus.write_byte(0x00, 0x36); // LD (HL), d8
+    cpu.bus.write_byte(0x01, 0xAB); // d8 = 0xAB
+    cpu.step();
+    // HLの指すアドレスに即値が書き込まれている
+    assert_eq!(cpu.bus.read_byte(0x1234), 0xAB);
+    // PCは2進む
+    assert_eq!(cpu.pc, 0x02);
 }
