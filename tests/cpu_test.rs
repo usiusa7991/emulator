@@ -1167,3 +1167,31 @@ fn ld_a_hlp() {
     assert_eq!(cpu.registers.get_hl(), 0x0000); // 0xFFFF + 1 = 0x0000
     assert_eq!(cpu.pc, 0x11);
 }
+
+#[test]
+fn dec_hl() {
+    let mut cpu = CPU::new();
+    // 1. 通常のデクリメント
+    cpu.registers.set_hl(0x1234);
+    cpu.bus.write_byte(0x00, 0x2B); // DEC HL
+    cpu.step();
+    assert_eq!(cpu.registers.get_hl(), 0x1233);
+    assert_eq!(cpu.pc, 0x01);
+    // フラグは変化しない（全てfalseのまま）
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+    assert!(!cpu.registers.f.carry);
+
+    // 2. アンダーフローのテスト
+    cpu.registers.set_hl(0x0000);
+    cpu.pc = 0x10;
+    cpu.bus.write_byte(0x10, 0x2B); // DEC HL
+    cpu.step();
+    assert_eq!(cpu.registers.get_hl(), 0xFFFF);
+    // フラグは変化しない
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+    assert!(!cpu.registers.f.carry);
+}
