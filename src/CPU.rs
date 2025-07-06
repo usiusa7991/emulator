@@ -250,6 +250,12 @@ impl CPU {
             let new_value = value.wrapping_add(1);
             self.registers.set_hl(new_value);
           },
+          IncDecTarget::HLI => {
+            let address = self.registers.get_hl();
+            let value = self.bus.read_byte(address);
+            let new_value = self.inc_8bit(value);
+            self.bus.write_byte(address, new_value);
+          },
           IncDecTarget::SP => {
             let value = self.sp;
             self.sp = value.wrapping_add(1);

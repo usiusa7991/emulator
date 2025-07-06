@@ -1151,7 +1151,7 @@ fn ld_a_hlp() {
     cpu.bus.write_byte(0x1234, 0xAB);
     cpu.bus.write_byte(0x00, 0x2A); // LD A, (HL+)
     cpu.step();
-    // Aに0xABがロードされている
+    // Aに0xABがロードされていること
     assert_eq!(cpu.registers.a, 0xAB);
     // HLが+1されている
     assert_eq!(cpu.registers.get_hl(), 0x1235);
@@ -1422,4 +1422,42 @@ fn inc_sp() {
     assert!(!cpu.registers.f.subtract);
     assert!(!cpu.registers.f.half_carry);
     assert!(!cpu.registers.f.carry);
+}
+
+#[test]
+fn inc_hli() {
+    let mut cpu = CPU::new();
+    // 1. 通常のインクリメント
+    cpu.registers.set_hl(0x1234);
+    cpu.bus.write_byte(0x1234, 0x01);
+    cpu.bus.write_byte(0x00, 0x34); // INC (HL)
+    cpu.step();
+    assert_eq!(cpu.bus.read_byte(0x1234), 0x02);
+    assert_eq!(cpu.pc, 0x01);
+    // HLレジスタ自体は変化しない
+    assert_eq!(cpu.registers.get_hl(), 0x1234);
+    // フラグ
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.half_carry);
+    assert!(!cpu.registers.f.subtract);
+
+    // 2. ハーフキャリー
+    cpu.pc = 0;
+    cpu.bus.write_byte(0x1234, 0x0F);
+    cpu.bus.write_byte(0x00, 0x34); // INC (HL)
+    cpu.step();
+    assert_eq!(cpu.bus.read_byte(0x1234), 0x10);
+    assert!(cpu.registers.f.half_carry);
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+
+    // 3. ゼロフラグ
+    cpu.pc = 0;
+    cpu.bus.write_byte(0x1234, 0xFF);
+    cpu.bus.write_byte(0x00, 0x34); // INC (HL)
+    cpu.step();
+    assert_eq!(cpu.bus.read_byte(0x1234), 0x00);
+    assert!(cpu.registers.f.zero);
+    assert!(cpu.registers.f.half_carry);
+    assert!(!cpu.registers.f.subtract);
 }

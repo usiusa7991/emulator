@@ -64,7 +64,7 @@ pub enum AddSource {
 }
 
 pub enum IncDecTarget {
-	A, B, C, D, E, H, L, HLI, BC, DE, HL, SP
+	A, B, C, D, E, H, L, BC, DE, HL, HLI, SP
 }
 
 pub enum PrefixTarget {
@@ -151,6 +151,7 @@ impl Instruction {
       0x31 => Some(Instruction::LD(LoadType::TwoByte(LoadTwoByteTarget::SP, LoadTwoByteSource::D16))),
       0x32 => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::HLIM, LoadByteSource::A))),
       0x33 => Some(Instruction::INC(IncDecTarget::SP)),
+      0x34 => Some(Instruction::INC(IncDecTarget::HLI)),
       _ => None
     }
   }
