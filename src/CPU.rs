@@ -131,6 +131,23 @@ impl CPU {
         };
         self.jump(jump_condition)
       },
+      Instruction::SUB(source) => {
+        let source_value = match source {
+          SubSource::A => self.registers.a,
+          SubSource::B => self.registers.b,
+          SubSource::C => self.registers.c,
+          SubSource::D => self.registers.d,
+          SubSource::E => self.registers.e,
+          SubSource::H => self.registers.h,
+          SubSource::L => self.registers.l,
+          SubSource::HLI => self.bus.read_byte(self.registers.get_hl()),
+          _ => panic!("TODO: implement other SubSource"),
+        };
+        self.sub_a(source_value);
+        match source {
+          _ => self.pc.wrapping_add(1),
+        }
+      },
       Instruction::JR(conditions) => {
         let skip_counts = self.read_next_byte() as i8;
         let condition_flag = match conditions {
@@ -576,6 +593,18 @@ impl CPU {
         Some(false),
         Some((a_value & 0x0F) + (value & 0x0F) + carry > 0x0F),
         Some(did_overflow)
+    );
+    self.registers.a = result;
+  }
+
+  fn sub_a(&mut self, value: u8) {
+    let a = self.registers.a;
+    let (result, borrow) = a.overflowing_sub(value);
+    self.registers.set_f(
+      Some(result == 0),
+      Some(true),
+      Some((a & 0x0F) < (value & 0x0F)),
+      Some(borrow)
     );
     self.registers.a = result;
   }

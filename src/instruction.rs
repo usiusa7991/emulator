@@ -39,6 +39,7 @@ pub enum Instruction {
   NOP,
   ADD(AddType),
   ADC(AdcTarget, AdcSource),
+  SUB(SubSource),
   PUSH(StackTarget),
   POP(StackTarget),
   CALL(JumpTest),
@@ -85,6 +86,10 @@ pub enum AdcTarget {
 }
 
 pub enum AdcSource {
+  A, B, C, D, E, H, L, D8, HLI
+}
+
+pub enum SubSource {
   A, B, C, D, E, H, L, D8, HLI
 }
 
@@ -268,6 +273,14 @@ impl Instruction {
       0x8D => Some(Instruction::ADC(AdcTarget::A, AdcSource::L)),
       0x8E => Some(Instruction::ADC(AdcTarget::A, AdcSource::HLI)),
       0x8F => Some(Instruction::ADC(AdcTarget::A, AdcSource::A)),
+      0x90 => Some(Instruction::SUB(SubSource::B)),
+      0x91 => Some(Instruction::SUB(SubSource::C)),
+      0x92 => Some(Instruction::SUB(SubSource::D)),
+      0x93 => Some(Instruction::SUB(SubSource::E)),
+      0x94 => Some(Instruction::SUB(SubSource::H)),
+      0x95 => Some(Instruction::SUB(SubSource::L)),
+      0x96 => Some(Instruction::SUB(SubSource::HLI)),
+      0x97 => Some(Instruction::SUB(SubSource::A)),
       _ => None
     }
   }
