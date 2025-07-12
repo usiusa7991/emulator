@@ -1,5 +1,3 @@
-use std::ops::Add;
-
 pub enum JumpTest {
   NotZero,
   Zero,
