@@ -1,3 +1,5 @@
+use std::ops::Add;
+
 pub enum JumpTest {
   NotZero,
   Zero,
@@ -37,7 +39,7 @@ pub enum LoadType {
 
 pub enum Instruction {
   NOP,
-  ADD(AddTarget, AddSource),
+  ADD(AddType),
   PUSH(StackTarget),
   POP(StackTarget),
   CALL(JumpTest),
@@ -58,24 +60,37 @@ pub enum Instruction {
   CCF
 }
 
-pub enum AddTarget {
-	HL
+pub enum AddByteTarget {
+  A
 }
 
-pub enum AddSource {
-	BC, DE, HL, SP
+pub enum AddByteSource {
+  A, B, C, D, E, H, L, HLI
+}
+
+pub enum AddTwoByteTarget {
+  HL
+}
+
+pub enum AddTwoByteSource {
+  BC, DE, HL, SP
+}
+
+pub enum AddType {
+  Byte(AddByteTarget, AddByteSource),
+  TwoByte(AddTwoByteTarget, AddTwoByteSource)
 }
 
 pub enum IncDecTarget {
-	A, B, C, D, E, H, L, BC, DE, HL, HLI, SP
+  A, B, C, D, E, H, L, BC, DE, HL, HLI, SP
 }
 
 pub enum PrefixTarget {
-	A, B, C, D, E, H, L, HLI
+  A, B, C, D, E, H, L, HLI
 }
 
 pub enum StackTarget {
-	AF, BC, DE, HL
+  AF, BC, DE, HL
 }
 
 impl Instruction {
@@ -112,7 +127,7 @@ impl Instruction {
       0x06 => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::B, LoadByteSource::D8))),
       0x07 => Some(Instruction::RLCA),
       0x08 => Some(Instruction::LD(LoadType::TwoByte(LoadTwoByteTarget::A16, LoadTwoByteSource::SP))),
-      0x09 => Some(Instruction::ADD(AddTarget::HL, AddSource::BC)),
+      0x09 => Some(Instruction::ADD(AddType::TwoByte(AddTwoByteTarget::HL, AddTwoByteSource::BC))),
       0x0A => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::A, LoadByteSource::BCI))),
       0x0B => Some(Instruction::DEC(IncDecTarget::BC)),
       0x0C => Some(Instruction::INC(IncDecTarget::C)),
@@ -127,7 +142,7 @@ impl Instruction {
       0x16 => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::D, LoadByteSource::D8))),
       0x17 => Some(Instruction::RLA),
       0x18 => Some(Instruction::JR(JumpRelativeConditions::Always)),
-      0x19 => Some(Instruction::ADD(AddTarget::HL, AddSource::DE)),
+      0x19 => Some(Instruction::ADD(AddType::TwoByte(AddTwoByteTarget::HL, AddTwoByteSource::DE))),
       0x1A => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::A, LoadByteSource::DEI))),
       0x1B => Some(Instruction::DEC(IncDecTarget::DE)),
       0x1C => Some(Instruction::INC(IncDecTarget::E)),
@@ -143,7 +158,7 @@ impl Instruction {
       0x26 => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::H, LoadByteSource::D8))),
       0x27 => Some(Instruction::DAA),
       0x28 => Some(Instruction::JR(JumpRelativeConditions::ZeroFlag)),
-      0x29 => Some(Instruction::ADD(AddTarget::HL, AddSource::HL)),
+      0x29 => Some(Instruction::ADD(AddType::TwoByte(AddTwoByteTarget::HL, AddTwoByteSource::HL))),
       0x2A => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::A, LoadByteSource::HLIP))),
       0x2B => Some(Instruction::DEC(IncDecTarget::HL)),
       0x2C => Some(Instruction::INC(IncDecTarget::L)),
@@ -159,7 +174,7 @@ impl Instruction {
       0x36 => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::HLI, LoadByteSource::D8))),
       0x37 => Some(Instruction::SCF),
       0x38 => Some(Instruction::JR(JumpRelativeConditions::CarryFlag)),
-      0x39 => Some(Instruction::ADD(AddTarget::HL, AddSource::SP)),
+      0x39 => Some(Instruction::ADD(AddType::TwoByte(AddTwoByteTarget::HL, AddTwoByteSource::SP))),
       0x3A => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::A, LoadByteSource::HLIM))),
       0x3B => Some(Instruction::DEC(IncDecTarget::SP)),
       0x3C => Some(Instruction::INC(IncDecTarget::A)),
@@ -230,6 +245,14 @@ impl Instruction {
       0x7D => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::A, LoadByteSource::L))),
       0x7E => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::A, LoadByteSource::HLI))),
       0x7F => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::A, LoadByteSource::A))),
+      0x80 => Some(Instruction::ADD(AddType::Byte(AddByteTarget::A, AddByteSource::B))),
+      0x81 => Some(Instruction::ADD(AddType::Byte(AddByteTarget::A, AddByteSource::C))),
+      0x82 => Some(Instruction::ADD(AddType::Byte(AddByteTarget::A, AddByteSource::D))),
+      0x83 => Some(Instruction::ADD(AddType::Byte(AddByteTarget::A, AddByteSource::E))),
+      0x84 => Some(Instruction::ADD(AddType::Byte(AddByteTarget::A, AddByteSource::H))),
+      0x85 => Some(Instruction::ADD(AddType::Byte(AddByteTarget::A, AddByteSource::L))),
+      0x86 => Some(Instruction::ADD(AddType::Byte(AddByteTarget::A, AddByteSource::HLI))),
+      0x87 => Some(Instruction::ADD(AddType::Byte(AddByteTarget::A, AddByteSource::A))),
       _ => None
     }
   }

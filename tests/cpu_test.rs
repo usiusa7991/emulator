@@ -2145,3 +2145,70 @@ fn ld_a_group() {
     cpu.registers.a = 0xF0;
     cpu.bus.write_byte(0x07, 0x7F); cpu.pc = 0x07; cpu.step(); assert_eq!(cpu.registers.a, 0xF0);
 }
+#[test]
+fn add_a_r() {
+    let mut cpu = CPU::new();
+
+    // 0x80: ADD A, B
+    cpu.registers.a = 1;
+    cpu.registers.b = 2;
+    cpu.bus.write_byte(0x00, 0x80);
+    cpu.step();
+    assert_eq!(cpu.registers.a, 3);
+
+    // 0x81: ADD A, C
+    cpu.pc = 0;
+    cpu.registers.a = 1;
+    cpu.registers.c = 3;
+    cpu.bus.write_byte(0x00, 0x81);
+    cpu.step();
+    assert_eq!(cpu.registers.a, 4);
+
+    // 0x82: ADD A, D
+    cpu.pc = 0;
+    cpu.registers.a = 1;
+    cpu.registers.d = 4;
+    cpu.bus.write_byte(0x00, 0x82);
+    cpu.step();
+    assert_eq!(cpu.registers.a, 5);
+
+    // 0x83: ADD A, E
+    cpu.pc = 0;
+    cpu.registers.a = 1;
+    cpu.registers.e = 5;
+    cpu.bus.write_byte(0x00, 0x83);
+    cpu.step();
+    assert_eq!(cpu.registers.a, 6);
+
+    // 0x84: ADD A, H
+    cpu.pc = 0;
+    cpu.registers.a = 1;
+    cpu.registers.h = 6;
+    cpu.bus.write_byte(0x00, 0x84);
+    cpu.step();
+    assert_eq!(cpu.registers.a, 7);
+
+    // 0x85: ADD A, L
+    cpu.pc = 0;
+    cpu.registers.a = 1;
+    cpu.registers.l = 7;
+    cpu.bus.write_byte(0x00, 0x85);
+    cpu.step();
+    assert_eq!(cpu.registers.a, 8);
+
+    // 0x86: ADD A, (HL)
+    cpu.pc = 0;
+    cpu.registers.a = 1;
+    cpu.registers.set_hl(0x1234);
+    cpu.bus.write_byte(0x1234, 8);
+    cpu.bus.write_byte(0x00, 0x86);
+    cpu.step();
+    assert_eq!(cpu.registers.a, 9);
+
+    // 0x87: ADD A, A
+    cpu.pc = 0;
+    cpu.registers.a = 5;
+    cpu.bus.write_byte(0x00, 0x87);
+    cpu.step();
+    assert_eq!(cpu.registers.a, 10);
+}

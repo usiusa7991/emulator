@@ -61,19 +61,40 @@ impl CPU {
   pub fn execute(&mut self, instruction: Instruction) -> u16 {
     match instruction {
       Instruction::NOP => self.pc.wrapping_add(1),
-      Instruction::ADD(target, source) => {
-        let source_value = match source {
-          AddSource::BC => self.registers.get_bc(),
-          AddSource::DE => self.registers.get_de(),
-          AddSource::HL => self.registers.get_hl(),
-          AddSource::SP => self.sp
-        };
-        match target {
-          AddTarget::HL => self.add_to_hl(source_value),
-        };
-        match source {
-          _ => self.pc.wrapping_add(1)
+      Instruction::ADD(add_type) => {
+        match add_type {
+          AddType::Byte(target, source) => {
+            let source_value = match source {
+              AddByteSource::A => self.registers.a,
+              AddByteSource::B => self.registers.b,
+              AddByteSource::C => self.registers.c,
+              AddByteSource::D => self.registers.d,
+              AddByteSource::E => self.registers.e,
+              AddByteSource::H => self.registers.h,
+              AddByteSource::L => self.registers.l,
+              AddByteSource::HLI => self.bus.read_byte(self.registers.get_hl()),
+              _ => panic!("TODO: implement other AddByteSource"),
+            };
+            match target {
+              AddByteTarget::A => self.add_to_a(source_value),
+              _ => panic!("TODO: implement other AddByteTarget"),
+            };
+          },
+          AddType::TwoByte(target, source) => {
+            let source_value = match source {
+              AddTwoByteSource::BC => self.registers.get_bc(),
+              AddTwoByteSource::DE => self.registers.get_de(),
+              AddTwoByteSource::HL => self.registers.get_hl(),
+              AddTwoByteSource::SP => self.sp,
+              _ => panic!("TODO: implement other AddTwoByteSource"),
+            };
+            match target {
+              AddTwoByteTarget::HL => self.add_to_hl(source_value),
+              _ => panic!("TODO: implement other AddTwoByteTarget"),
+            };
+          }
         }
+        self.pc.wrapping_add(1)
       },
       Instruction::JP(test) => {
         let jump_condition = match test {
@@ -495,6 +516,18 @@ impl CPU {
     self.sp = self.sp.wrapping_add(1);
 
     (msb << 8) | lsb
+  }
+
+  fn add_to_a(&mut self, value: u8) {
+    let a_value= self.registers.a;
+    let (result, did_overflow) = a_value.overflowing_add(value);
+    self.registers.set_f(
+        Some(result == 0),
+        Some(false),
+        Some((a_value & 0x0F) + (value & 0x0F) > 0x0F),
+        Some(did_overflow)
+    );
+    self.registers.a = result;
   }
 
   fn add_to_hl(&mut self, value: u16) {
