@@ -38,6 +38,7 @@ pub enum LoadType {
 pub enum Instruction {
   NOP,
   ADD(AddType),
+  ADC(AdcTarget, AdcSource),
   PUSH(StackTarget),
   POP(StackTarget),
   CALL(JumpTest),
@@ -77,6 +78,14 @@ pub enum AddTwoByteSource {
 pub enum AddType {
   Byte(AddByteTarget, AddByteSource),
   TwoByte(AddTwoByteTarget, AddTwoByteSource)
+}
+
+pub enum AdcTarget {
+  A
+}
+
+pub enum AdcSource {
+  A, B, C, D, E, H, L, D8, HLI
 }
 
 pub enum IncDecTarget {
@@ -251,6 +260,14 @@ impl Instruction {
       0x85 => Some(Instruction::ADD(AddType::Byte(AddByteTarget::A, AddByteSource::L))),
       0x86 => Some(Instruction::ADD(AddType::Byte(AddByteTarget::A, AddByteSource::HLI))),
       0x87 => Some(Instruction::ADD(AddType::Byte(AddByteTarget::A, AddByteSource::A))),
+      0x88 => Some(Instruction::ADC(AdcTarget::A, AdcSource::B)),
+      0x89 => Some(Instruction::ADC(AdcTarget::A, AdcSource::C)),
+      0x8A => Some(Instruction::ADC(AdcTarget::A, AdcSource::D)),
+      0x8B => Some(Instruction::ADC(AdcTarget::A, AdcSource::E)),
+      0x8C => Some(Instruction::ADC(AdcTarget::A, AdcSource::H)),
+      0x8D => Some(Instruction::ADC(AdcTarget::A, AdcSource::L)),
+      0x8E => Some(Instruction::ADC(AdcTarget::A, AdcSource::HLI)),
+      0x8F => Some(Instruction::ADC(AdcTarget::A, AdcSource::A)),
       _ => None
     }
   }

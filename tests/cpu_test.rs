@@ -2283,3 +2283,123 @@ fn add_a_a() {
   assert_eq!(cpu.registers.a, 0);
   assert!(cpu.registers.f.zero);
 }
+
+#[test]
+fn adc_a_b() {
+    let mut cpu = CPU::new();
+    cpu.registers.a = 0x0F;
+    cpu.registers.b = 0x01;
+    cpu.registers.f.carry = true;
+    cpu.bus.write_byte(0x00, 0x88);
+    cpu.step();
+    assert_eq!(cpu.registers.a, 0x11); // 0x0F + 0x01 + 1
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(cpu.registers.f.half_carry); // 0x0F + 1 + 1 = 0x11, half carry
+    assert!(!cpu.registers.f.carry);
+}
+
+#[test]
+fn adc_a_c() {
+    let mut cpu = CPU::new();
+    cpu.registers.a = 0xFF;
+    cpu.registers.c = 0x01;
+    cpu.registers.f.carry = true;
+    cpu.bus.write_byte(0x00, 0x89);
+    cpu.step();
+    assert_eq!(cpu.registers.a, 1); // 0xFF + 0x01 + 1 = 0x101
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(cpu.registers.f.half_carry); // 0x0F + 1 + 1 = 0x11, half carry
+    assert!(cpu.registers.f.carry);
+}
+
+#[test]
+fn adc_a_d() {
+    let mut cpu = CPU::new();
+    cpu.registers.a = 0x00;
+    cpu.registers.d = 0x00;
+    cpu.registers.f.carry = false;
+    cpu.bus.write_byte(0x00, 0x8A);
+    cpu.step();
+    assert_eq!(cpu.registers.a, 0x00);
+    assert!(cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+    assert!(!cpu.registers.f.carry);
+}
+
+#[test]
+fn adc_a_e() {
+    let mut cpu = CPU::new();
+    cpu.registers.a = 0x8F;
+    cpu.registers.e = 0x0F;
+    cpu.registers.f.carry = false;
+    cpu.bus.write_byte(0x00, 0x8B);
+    cpu.step();
+    assert_eq!(cpu.registers.a, 0x9E);
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(cpu.registers.f.half_carry);
+    assert!(!cpu.registers.f.carry);
+}
+
+#[test]
+fn adc_a_h() {
+    let mut cpu = CPU::new();
+    cpu.registers.a = 0xFF;
+    cpu.registers.h = 0x00;
+    cpu.registers.f.carry = true;
+    cpu.bus.write_byte(0x00, 0x8C);
+    cpu.step();
+    assert_eq!(cpu.registers.a, 0x00);
+    assert!(cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(cpu.registers.f.half_carry);
+    assert!(cpu.registers.f.carry);
+}
+
+#[test]
+fn adc_a_l() {
+    let mut cpu = CPU::new();
+    cpu.registers.a = 0x7F;
+    cpu.registers.l = 0x00;
+    cpu.registers.f.carry = true;
+    cpu.bus.write_byte(0x00, 0x8D);
+    cpu.step();
+    assert_eq!(cpu.registers.a, 0x80);
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(cpu.registers.f.half_carry);
+    assert!(!cpu.registers.f.carry);
+}
+
+#[test]
+fn adc_a_hl() {
+    let mut cpu = CPU::new();
+    cpu.registers.a = 0x0F;
+    cpu.registers.set_hl(0x1234);
+    cpu.bus.write_byte(0x1234, 0x01);
+    cpu.registers.f.carry = true;
+    cpu.bus.write_byte(0x00, 0x8E);
+    cpu.step();
+    assert_eq!(cpu.registers.a, 0x11);
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(cpu.registers.f.half_carry);
+    assert!(!cpu.registers.f.carry);
+}
+
+#[test]
+fn adc_a_a() {
+    let mut cpu = CPU::new();
+    cpu.registers.a = 0x80;
+    cpu.registers.f.carry = true;
+    cpu.bus.write_byte(0x00, 0x8F);
+    cpu.step();
+    assert_eq!(cpu.registers.a, 0x01);
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+    assert!(cpu.registers.f.carry);
+}

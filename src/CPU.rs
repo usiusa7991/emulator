@@ -96,6 +96,31 @@ impl CPU {
         }
         self.pc.wrapping_add(1)
       },
+      Instruction::ADC(target, source) => {
+        let source_value = match source {
+          AdcSource::A => self.registers.a,
+          AdcSource::B => self.registers.b,
+          AdcSource::C => self.registers.c,
+          AdcSource::D => self.registers.d,
+          AdcSource::E => self.registers.e,
+          AdcSource::H => self.registers.h,
+          AdcSource::L => self.registers.l,
+          AdcSource::D8 => self.read_next_byte(),
+          AdcSource::HLI => self.bus.read_byte(self.registers.get_hl()),
+          _ => panic!("TODO: implement other AdcSource"),
+        };
+        match target {
+          AdcTarget::A => {
+            let carry = if self.registers.f.carry { 1 } else { 0 };
+            self.add_to_a(source_value.wrapping_add(carry));
+          },
+          _ => panic!("TODO: implement other AdcTarget"),
+        };
+        match source {
+          AdcSource::D8 => self.pc.wrapping_add(2),
+          _ => self.pc.wrapping_add(1),
+        }
+      },
       Instruction::JP(test) => {
         let jump_condition = match test {
             JumpTest::NotZero => !self.registers.f.zero,
@@ -540,6 +565,19 @@ impl CPU {
         Some(did_overflow)
     );
     self.registers.set_hl(new_value);
+  }
+
+  fn adc_to_a(&mut self, value: u8) {
+    let a_value = self.registers.a;
+    let carry = if self.registers.f.carry { 1 } else { 0 };
+    let (result, did_overflow) = a_value.overflowing_add(value.wrapping_add(carry));
+    self.registers.set_f(
+        Some(result == 0),
+        Some(false),
+        Some((a_value & 0x0F) + (value & 0x0F) + carry > 0x0F),
+        Some(did_overflow)
+    );
+    self.registers.a = result;
   }
 
   fn inc_8bit(&mut self, value: u8) -> u8 {
