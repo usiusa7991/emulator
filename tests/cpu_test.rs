@@ -3645,3 +3645,137 @@ fn ret_nz() {
   // SPは変化しない
   assert_eq!(cpu.sp, 0xFFFC);
 }
+
+#[test]
+fn ret_z() {
+  let mut cpu = CPU::new();
+
+  // スタックにリターンアドレスを積む
+  cpu.sp = 0xFFFC;
+  cpu.bus.write_byte(0xFFFC, 0x78); // LSB
+  cpu.bus.write_byte(0xFFFD, 0x56); // MSB
+
+  // Zeroフラグが1（リターンする場合）
+  cpu.registers.f.zero = true;
+  cpu.pc = 0x100;
+  cpu.bus.write_byte(0x100, 0xC8); // RET Z
+
+  cpu.step();
+
+  // スタックからアドレスを読みPCにセット
+  assert_eq!(cpu.pc, 0x5678);
+  // SPが2増加
+  assert_eq!(cpu.sp, 0xFFFE);
+
+  // Zeroフラグが0（リターンしない場合）
+  let mut cpu = CPU::new();
+  cpu.sp = 0xFFFC;
+  cpu.bus.write_byte(0xFFFC, 0x78);
+  cpu.bus.write_byte(0xFFFD, 0x56);
+  cpu.registers.f.zero = false;
+  cpu.pc = 0x200;
+  cpu.bus.write_byte(0x200, 0xC8); // RET Z
+
+  cpu.step();
+
+  // PCは次命令へ
+  assert_eq!(cpu.pc, 0x201);
+  // SPは変化しない
+  assert_eq!(cpu.sp, 0xFFFC);
+}
+
+#[test]
+fn ret() {
+  let mut cpu = CPU::new();
+
+  // スタックにリターンアドレス
+  cpu.sp = 0xFFFC;
+  cpu.bus.write_byte(0xFFFC, 0xCD); // LSB
+  cpu.bus.write_byte(0xFFFD, 0xAB); // MSB
+
+  cpu.pc = 0x100;
+  cpu.bus.write_byte(0x100, 0xC9); // RET
+
+  cpu.step();
+
+  // スタックからアドレスを読みPCにセット
+  assert_eq!(cpu.pc, 0xABCD);
+  // SPが2増加
+  assert_eq!(cpu.sp, 0xFFFE);
+}
+
+#[test]
+fn ret_nc() {
+  let mut cpu = CPU::new();
+
+  // スタックにリターンアドレスを積む
+  cpu.sp = 0xFFFC;
+  cpu.bus.write_byte(0xFFFC, 0x34); // LSB
+  cpu.bus.write_byte(0xFFFD, 0x12); // MSB
+
+  // キャリーフラグが0（リターンする場合）
+  cpu.registers.f.carry = false;
+  cpu.pc = 0x100;
+  cpu.bus.write_byte(0x100, 0xD0); // RET NC
+
+  cpu.step();
+
+  // スタックからアドレスを読みPCにセット
+  assert_eq!(cpu.pc, 0x1234);
+  // SPが2増加
+  assert_eq!(cpu.sp, 0xFFFE);
+
+  // キャリーフラグが1（リターンしない場合）
+  let mut cpu = CPU::new();
+  cpu.sp = 0xFFFC;
+  cpu.bus.write_byte(0xFFFC, 0x34);
+  cpu.bus.write_byte(0xFFFD, 0x12);
+  cpu.registers.f.carry = true;
+  cpu.pc = 0x200;
+  cpu.bus.write_byte(0x200, 0xD0); // RET NC
+
+  cpu.step();
+
+  // PCは次命令へ
+  assert_eq!(cpu.pc, 0x201);
+  // SPは変化しない
+  assert_eq!(cpu.sp, 0xFFFC);
+}
+
+#[test]
+fn ret_c() {
+  let mut cpu = CPU::new();
+
+  // スタックにリターンアドレスを積む
+  cpu.sp = 0xFFFC;
+  cpu.bus.write_byte(0xFFFC, 0x78); // LSB
+  cpu.bus.write_byte(0xFFFD, 0x56); // MSB
+
+  // キャリーフラグが1（リターンする場合）
+  cpu.registers.f.carry = true;
+  cpu.pc = 0x100;
+  cpu.bus.write_byte(0x100, 0xD8); // RET C
+
+  cpu.step();
+
+  // スタックからアドレスを読みPCにセット
+  assert_eq!(cpu.pc, 0x5678);
+  // SPが2増加
+  assert_eq!(cpu.sp, 0xFFFE);
+
+  // キャリーフラグが0（リターンしない場合）
+  let mut cpu = CPU::new();
+  cpu.sp = 0xFFFC;
+  cpu.bus.write_byte(0xFFFC, 0x78);
+  cpu.bus.write_byte(0xFFFD, 0x56);
+  cpu.registers.f.carry = false;
+  cpu.pc = 0x200;
+  cpu.bus.write_byte(0x200, 0xD8); // RET C
+
+  cpu.step();
+
+  // PCは次命令へ
+  assert_eq!(cpu.pc, 0x201);
+  // SPは変化しない
+  assert_eq!(cpu.sp, 0xFFFC);
+}
