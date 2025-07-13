@@ -14,6 +14,10 @@ pub enum JumpRelativeConditions {
   Always
 }
 
+pub enum RetConditions {
+  NoZeroFlag,
+}
+
 pub enum LoadByteTarget {
   A, B, C, D, E, H, L, BCI, DEI, HLI, HLIP, HLIM
 }
@@ -44,7 +48,6 @@ pub enum Instruction {
   PUSH(StackTarget),
   POP(StackTarget),
   CALL(JumpTest),
-  RET(JumpTest),
   RLC(PrefixTarget),
   INC(IncDecTarget),
   DEC(IncDecTarget),
@@ -54,6 +57,7 @@ pub enum Instruction {
   CP(CpSource),
   JP(JumpTest),
   JR(JumpRelativeConditions),
+  RET(RetConditions),
   LD(LoadType),
   RLCA,
   RRCA,
@@ -346,6 +350,7 @@ impl Instruction {
       0xBD => Some(Instruction::CP(CpSource::L)),
       0xBE => Some(Instruction::CP(CpSource::HLI)),
       0xBF => Some(Instruction::CP(CpSource::A)),
+      0xC0 => Some(Instruction::RET(RetConditions::NoZeroFlag)),
       _ => None
     }
   }

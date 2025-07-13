@@ -191,6 +191,16 @@ impl CPU {
           self.pc.wrapping_add(2)
         }
       },
+      Instruction::RET(conditions) => {
+        let condition_flag = match conditions {
+          RetConditions::NoZeroFlag => !self.registers.f.zero,
+        };
+        if condition_flag {
+          self.pop()
+        } else {
+          self.pc.wrapping_add(1)
+        }
+      },
       Instruction::LD(load_type) => {
         match load_type {
           LoadType::Byte(target, source) => {
@@ -298,7 +308,7 @@ impl CPU {
       },
       Instruction::RET(test) => {
         let jump_condition = match test {
-            JumpTest::NotZero => !self.registers.f.zero,
+            RetConditions::NoZeroFlag => !self.registers.f.zero,
             _ => { panic!("TODO: support more conditions") }
         };
         self.return_(jump_condition)
