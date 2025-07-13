@@ -144,76 +144,76 @@
 - [x] 7F LD A,A
 
 #### 80–8F
-- [ ] 80 ADD A,B
-- [ ] 81 ADD A,C
-- [ ] 82 ADD A,D
-- [ ] 83 ADD A,E
-- [ ] 84 ADD A,H
-- [ ] 85 ADD A,L
-- [ ] 86 ADD A,(HL)
-- [ ] 87 ADD A,A
-- [ ] 88 ADC A,B
-- [ ] 89 ADC A,C
-- [ ] 8A ADC A,D
-- [ ] 8B ADC A,E
-- [ ] 8C ADC A,H
-- [ ] 8D ADC A,L
-- [ ] 8E ADC A,(HL)
-- [ ] 8F ADC A,A
+- [x] 80 ADD A,B
+- [x] 81 ADD A,C
+- [x] 82 ADD A,D
+- [x] 83 ADD A,E
+- [x] 84 ADD A,H
+- [x] 85 ADD A,L
+- [x] 86 ADD A,(HL)
+- [x] 87 ADD A,A
+- [x] 88 ADC A,B
+- [x] 89 ADC A,C
+- [x] 8A ADC A,D
+- [x] 8B ADC A,E
+- [x] 8C ADC A,H
+- [x] 8D ADC A,L
+- [x] 8E ADC A,(HL)
+- [x] 8F ADC A,A
 
 #### 90–9F
-- [ ] 90 SUB A,B
-- [ ] 91 SUB A,C
-- [ ] 92 SUB A,D
-- [ ] 93 SUB A,E
-- [ ] 94 SUB A,H
-- [ ] 95 SUB A,L
-- [ ] 96 SUB A,(HL)
-- [ ] 97 SUB A,A
-- [ ] 98 SBC A,B
-- [ ] 99 SBC A,C
-- [ ] 9A SBC A,D
-- [ ] 9B SBC A,E
-- [ ] 9C SBC A,H
-- [ ] 9D SBC A,L
-- [ ] 9E SBC A,(HL)
-- [ ] 9F SBC A,A
+- [x] 90 SUB A,B
+- [x] 91 SUB A,C
+- [x] 92 SUB A,D
+- [x] 93 SUB A,E
+- [x] 94 SUB A,H
+- [x] 95 SUB A,L
+- [x] 96 SUB A,(HL)
+- [x] 97 SUB A,A
+- [x] 98 SBC A,B
+- [x] 99 SBC A,C
+- [x] 9A SBC A,D
+- [x] 9B SBC A,E
+- [x] 9C SBC A,H
+- [x] 9D SBC A,L
+- [x] 9E SBC A,(HL)
+- [x] 9F SBC A,A
 
 #### A0–AF
-- [ ] A0 AND A,B
-- [ ] A1 AND A,C
-- [ ] A2 AND A,D
-- [ ] A3 AND A,E
-- [ ] A4 AND A,H
-- [ ] A5 AND A,L
-- [ ] A6 AND A,(HL)
-- [ ] A7 AND A,A
-- [ ] A8 XOR A,B
-- [ ] A9 XOR A,C
-- [ ] AA XOR A,D
-- [ ] AB XOR A,E
-- [ ] AC XOR A,H
-- [ ] AD XOR A,L
-- [ ] AE XOR A,(HL)
-- [ ] AF XOR A,A
+- [x] A0 AND A,B
+- [x] A1 AND A,C
+- [x] A2 AND A,D
+- [x] A3 AND A,E
+- [x] A4 AND A,H
+- [x] A5 AND A,L
+- [x] A6 AND A,(HL)
+- [x] A7 AND A,A
+- [x] A8 XOR A,B
+- [x] A9 XOR A,C
+- [x] AA XOR A,D
+- [x] AB XOR A,E
+- [x] AC XOR A,H
+- [x] AD XOR A,L
+- [x] AE XOR A,(HL)
+- [x] AF XOR A,A
 
 #### B0–BF
-- [ ] B0 OR A,B
-- [ ] B1 OR A,C
-- [ ] B2 OR A,D
-- [ ] B3 OR A,E
-- [ ] B4 OR A,H
-- [ ] B5 OR A,L
-- [ ] B6 OR A,(HL)
-- [ ] B7 OR A,A
-- [ ] B8 CP A,B
-- [ ] B9 CP A,C
-- [ ] BA CP A,D
-- [ ] BB CP A,E
-- [ ] BC CP A,H
-- [ ] BD CP A,L
-- [ ] BE CP A,(HL)
-- [ ] BF CP A,A
+- [x] B0 OR A,B
+- [x] B1 OR A,C
+- [x] B2 OR A,D
+- [x] B3 OR A,E
+- [x] B4 OR A,H
+- [x] B5 OR A,L
+- [x] B6 OR A,(HL)
+- [x] B7 OR A,A
+- [x] B8 CP A,B
+- [x] B9 CP A,C
+- [x] BA CP A,D
+- [x] BB CP A,E
+- [x] BC CP A,H
+- [x] BD CP A,L
+- [x] BE CP A,(HL)
+- [x] BF CP A,A
 
 #### C0–CF
 - [ ] C0 RET NZ
