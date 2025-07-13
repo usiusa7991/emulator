@@ -194,6 +194,10 @@ impl CPU {
       Instruction::RET(conditions) => {
         let condition_flag = match conditions {
           RetConditions::NoZeroFlag => !self.registers.f.zero,
+          RetConditions::ZeroFlag => self.registers.f.zero,
+          RetConditions::NoCarryFlag => !self.registers.f.carry,
+          RetConditions::CarryFlag => self.registers.f.carry,
+          RetConditions::Always => true
         };
         if condition_flag {
           self.pop()
@@ -305,13 +309,6 @@ impl CPU {
             _ => { panic!("TODO: support more conditions") }
         };
         self.call(jump_condition)
-      },
-      Instruction::RET(test) => {
-        let jump_condition = match test {
-            RetConditions::NoZeroFlag => !self.registers.f.zero,
-            _ => { panic!("TODO: support more conditions") }
-        };
-        self.return_(jump_condition)
       },
       Instruction::INC(target) => {
         match target {

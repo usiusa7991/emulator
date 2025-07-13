@@ -16,6 +16,10 @@ pub enum JumpRelativeConditions {
 
 pub enum RetConditions {
   NoZeroFlag,
+  ZeroFlag,
+  NoCarryFlag,
+  CarryFlag,
+  Always
 }
 
 pub enum LoadByteTarget {
@@ -351,6 +355,10 @@ impl Instruction {
       0xBE => Some(Instruction::CP(CpSource::HLI)),
       0xBF => Some(Instruction::CP(CpSource::A)),
       0xC0 => Some(Instruction::RET(RetConditions::NoZeroFlag)),
+      0xC8 => Some(Instruction::RET(RetConditions::ZeroFlag)),
+      0xC9 => Some(Instruction::RET(RetConditions::Always)),
+      0xD0 => Some(Instruction::RET(RetConditions::NoCarryFlag)),
+      0xD8 => Some(Instruction::RET(RetConditions::CarryFlag)),
       _ => None
     }
   }
