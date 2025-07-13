@@ -355,10 +355,14 @@ impl Instruction {
       0xBE => Some(Instruction::CP(CpSource::HLI)),
       0xBF => Some(Instruction::CP(CpSource::A)),
       0xC0 => Some(Instruction::RET(RetConditions::NoZeroFlag)),
+      0xC1 => Some(Instruction::POP(StackTarget::BC)),
       0xC8 => Some(Instruction::RET(RetConditions::ZeroFlag)),
       0xC9 => Some(Instruction::RET(RetConditions::Always)),
       0xD0 => Some(Instruction::RET(RetConditions::NoCarryFlag)),
+      0xD1 => Some(Instruction::POP(StackTarget::DE)),
       0xD8 => Some(Instruction::RET(RetConditions::CarryFlag)),
+      0xE1 => Some(Instruction::POP(StackTarget::HL)),
+      0xF1 => Some(Instruction::POP(StackTarget::AF)),
       _ => None
     }
   }

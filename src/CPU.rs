@@ -299,7 +299,9 @@ impl CPU {
         let result = self.pop();
         match target {
             StackTarget::BC => self.registers.set_bc(result),
-            _ => { panic!("TODO: support more targets") }
+            StackTarget::DE => self.registers.set_de(result),
+            StackTarget::HL => self.registers.set_hl(result),
+            StackTarget::AF => self.registers.set_af(result),
         };
         self.pc.wrapping_add(1)
       },

@@ -3646,6 +3646,23 @@ fn ret_nz() {
   assert_eq!(cpu.sp, 0xFFFC);
 }
 
+fn pop_bc() {
+  let mut cpu = CPU::new();
+  // スタックに値を積む
+  cpu.sp = 0xFFFC;
+  cpu.bus.write_byte(0xFFFC, 0x34); // LSB
+  cpu.bus.write_byte(0xFFFD, 0x12); // MSB
+  // POP BC 命令 (0xC1)
+  cpu.bus.write_byte(0x00, 0xC1);
+  cpu.step();
+  // BCレジスタに値がセットされる
+  assert_eq!(cpu.registers.get_bc(), 0x1234);
+  // SPが2増加
+  assert_eq!(cpu.sp, 0xFFFE);
+  // PCが1進む
+  assert_eq!(cpu.pc, 0x01);
+}
+
 #[test]
 fn ret_z() {
   let mut cpu = CPU::new();
@@ -3743,6 +3760,20 @@ fn ret_nc() {
 }
 
 #[test]
+fn pop_de() {
+    let mut cpu = CPU::new();
+    cpu.sp = 0xFFFC;
+    cpu.bus.write_byte(0xFFFC, 0x78); // LSB
+    cpu.bus.write_byte(0xFFFD, 0x56); // MSB
+    // POP DE 命令 (0xD1)
+    cpu.bus.write_byte(0x00, 0xD1);
+    cpu.step();
+    assert_eq!(cpu.registers.get_de(), 0x5678);
+    assert_eq!(cpu.sp, 0xFFFE);
+    assert_eq!(cpu.pc, 0x01);
+}
+
+#[test]
 fn ret_c() {
   let mut cpu = CPU::new();
 
@@ -3778,4 +3809,32 @@ fn ret_c() {
   assert_eq!(cpu.pc, 0x201);
   // SPは変化しない
   assert_eq!(cpu.sp, 0xFFFC);
+}
+
+#[test]
+fn pop_hl() {
+    let mut cpu = CPU::new();
+    cpu.sp = 0xFFFC;
+    cpu.bus.write_byte(0xFFFC, 0xBC); // LSB
+    cpu.bus.write_byte(0xFFFD, 0x9A); // MSB
+    // POP HL 命令 (0xE1)
+    cpu.bus.write_byte(0x00, 0xE1);
+    cpu.step();
+    assert_eq!(cpu.registers.get_hl(), 0x9ABC);
+    assert_eq!(cpu.sp, 0xFFFE);
+    assert_eq!(cpu.pc, 0x01);
+}
+
+#[test]
+fn pop_af() {
+    let mut cpu = CPU::new();
+    cpu.sp = 0xFFFC;
+    cpu.bus.write_byte(0xFFFC, 0xF0); // LSB (Flags)
+    cpu.bus.write_byte(0xFFFD, 0x0D); // MSB (A)
+    // POP AF 命令 (0xF1)
+    cpu.bus.write_byte(0x00, 0xF1);
+    cpu.step();
+    assert_eq!(cpu.registers.get_af(), 0x0DF0);
+    assert_eq!(cpu.sp, 0xFFFE);
+    assert_eq!(cpu.pc, 0x01);
 }
