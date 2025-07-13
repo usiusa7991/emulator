@@ -48,6 +48,7 @@ pub enum Instruction {
   RLC(PrefixTarget),
   INC(IncDecTarget),
   DEC(IncDecTarget),
+  AND(AndSource),
   JP(JumpTest),
   JR(JumpRelativeConditions),
   LD(LoadType),
@@ -100,6 +101,10 @@ pub enum SbcSource {
 
 pub enum IncDecTarget {
   A, B, C, D, E, H, L, BC, DE, HL, HLI, SP
+}
+
+pub enum AndSource {
+  A, B, C, D, E, H, L, HLI
 }
 
 pub enum PrefixTarget {
@@ -294,6 +299,14 @@ impl Instruction {
       0x9D => Some(Instruction::SBC(SbcSource::L)),
       0x9E => Some(Instruction::SBC(SbcSource::HLI)),
       0x9F => Some(Instruction::SBC(SbcSource::A)),
+      0xA0 => Some(Instruction::AND(AndSource::B)),
+      0xA1 => Some(Instruction::AND(AndSource::C)),
+      0xA2 => Some(Instruction::AND(AndSource::D)),
+      0xA3 => Some(Instruction::AND(AndSource::E)),
+      0xA4 => Some(Instruction::AND(AndSource::H)),
+      0xA5 => Some(Instruction::AND(AndSource::L)),
+      0xA6 => Some(Instruction::AND(AndSource::HLI)),
+      0xA7 => Some(Instruction::AND(AndSource::A)),
       _ => None
     }
   }

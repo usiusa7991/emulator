@@ -2897,3 +2897,144 @@ fn sbc_a_a() {
   assert!(cpu.registers.f.half_carry);
   assert!(cpu.registers.f.carry);
 }
+
+#[test]
+fn and_a_b() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0b1100_1100;
+  cpu.registers.b = 0b1010_1010;
+  cpu.bus.write_byte(0x00, 0xA0); // AND B
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0b1000_1000);
+  assert!(!cpu.registers.f.zero);
+  assert!(!cpu.registers.f.carry);
+  assert!(cpu.registers.f.half_carry); // ANDは常にH=1
+  assert!(!cpu.registers.f.subtract);
+
+  // ゼロフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 0b0000_0001;
+  cpu.registers.b = 0b0000_0000;
+  cpu.bus.write_byte(0x00, 0xA0);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0);
+  assert!(cpu.registers.f.zero);
+  assert!(!cpu.registers.f.carry);
+  assert!(cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.subtract);
+}
+
+#[test]
+fn and_a_c() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0b1111_0000;
+  cpu.registers.c = 0b1010_1010;
+  cpu.bus.write_byte(0x00, 0xA1); // AND C
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0b1010_0000);
+  assert!(!cpu.registers.f.zero);
+  assert!(!cpu.registers.f.carry);
+  assert!(cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.subtract);
+}
+
+#[test]
+fn and_a_d() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0b1111_1111;
+  cpu.registers.d = 0b0000_1111;
+  cpu.bus.write_byte(0x00, 0xA2); // AND D
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0b0000_1111);
+  assert!(!cpu.registers.f.zero);
+  assert!(!cpu.registers.f.carry);
+  assert!(cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.subtract);
+}
+
+#[test]
+fn and_a_e() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0b1010_1010;
+  cpu.registers.e = 0b0101_0101;
+  cpu.bus.write_byte(0x00, 0xA3); // AND E
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0b0000_0000);
+  assert!(cpu.registers.f.zero);
+  assert!(!cpu.registers.f.carry);
+  assert!(cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.subtract);
+}
+
+#[test]
+fn and_a_h() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0b1111_0000;
+  cpu.registers.h = 0b0000_1111;
+  cpu.bus.write_byte(0x00, 0xA4); // AND H
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0b0000_0000);
+  assert!(cpu.registers.f.zero);
+  assert!(!cpu.registers.f.carry);
+  assert!(cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.subtract);
+}
+
+#[test]
+fn and_a_l() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0b1111_1111;
+  cpu.registers.l = 0b1111_0000;
+  cpu.bus.write_byte(0x00, 0xA5); // AND L
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0b1111_0000);
+  assert!(!cpu.registers.f.zero);
+  assert!(!cpu.registers.f.carry);
+  assert!(cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.subtract);
+}
+
+#[test]
+fn and_a_hli() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0b1010_1010;
+  cpu.registers.set_hl(0x1234);
+  cpu.bus.write_byte(0x1234, 0b1111_0000);
+  cpu.bus.write_byte(0x00, 0xA6); // AND (HL)
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0b1010_0000);
+  assert!(!cpu.registers.f.zero);
+  assert!(!cpu.registers.f.carry);
+  assert!(cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.subtract);
+
+  // ゼロフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 0b0000_0001;
+  cpu.bus.write_byte(0x1234, 0b0000_0000);
+  cpu.bus.write_byte(0x00, 0xA6);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0);
+  assert!(cpu.registers.f.zero);
+}
+
+#[test]
+fn and_a_a() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0b1010_1010;
+  cpu.bus.write_byte(0x00, 0xA7); // AND A
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0b1010_1010);
+  assert!(!cpu.registers.f.zero);
+  assert!(!cpu.registers.f.carry);
+  assert!(cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.subtract);
+
+  // ゼロフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 0;
+  cpu.bus.write_byte(0x00, 0xA7);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0);
+  assert!(cpu.registers.f.zero);
+}

@@ -426,6 +426,22 @@ impl CPU {
         }
         self.pc.wrapping_add(1)
       },
+      Instruction::AND(source) => {
+        let source_value = match source {
+          AndSource::A => self.registers.a,
+          AndSource::B => self.registers.b,
+          AndSource::C => self.registers.c,
+          AndSource::D => self.registers.d,
+          AndSource::E => self.registers.e,
+          AndSource::H => self.registers.h,
+          AndSource::L => self.registers.l,
+          AndSource::HLI => self.bus.read_byte(self.registers.get_hl()),
+        };
+        self.and_a(source_value);
+        match source {
+          _ => self.pc.wrapping_add(1),
+        }
+      }
       Instruction::RLCA => {
         let value = self.registers.a;
         let seventh_bit = value >> 7;
@@ -676,6 +692,17 @@ impl CPU {
         Some(false),
         Some(false),
         Some(carry != 0)
+    );
+  }
+
+  fn and_a(&mut self, value: u8) {
+    let result = self.registers.a & value;
+    self.registers.a = result;
+    self.registers.set_f(
+        Some(result == 0),
+        Some(false),
+        Some(true),
+        Some(false)
     );
   }
 }
