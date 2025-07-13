@@ -148,6 +148,23 @@ impl CPU {
           _ => self.pc.wrapping_add(1),
         }
       },
+      Instruction::SBC(source) => {
+        let source_value = match source {
+          SbcSource::A => self.registers.a,
+          SbcSource::B => self.registers.b,
+          SbcSource::C => self.registers.c,
+          SbcSource::D => self.registers.d,
+          SbcSource::E => self.registers.e,
+          SbcSource::H => self.registers.h,
+          SbcSource::L => self.registers.l,
+          SbcSource::HLI => self.bus.read_byte(self.registers.get_hl()),
+          _ => panic!("TODO: implement other SbcSource"),
+        };
+        self.sbc_a(source_value);
+        match source {
+          _ => self.pc.wrapping_add(1),
+        }
+      },
       Instruction::JR(conditions) => {
         let skip_counts = self.read_next_byte() as i8;
         let condition_flag = match conditions {
@@ -604,6 +621,19 @@ impl CPU {
       Some(result == 0),
       Some(true),
       Some((a & 0x0F) < (value & 0x0F)),
+      Some(borrow)
+    );
+    self.registers.a = result;
+  }
+
+  fn sbc_a(&mut self, value: u8) {
+    let a = self.registers.a;
+    let carry = if self.registers.f.carry { 1 } else { 0 };
+    let (result, borrow) = a.overflowing_sub(value.wrapping_add(carry));
+    self.registers.set_f(
+      Some(result == 0),
+      Some(true),
+      Some((a & 0x0F) < (value & 0x0F) + carry),
       Some(borrow)
     );
     self.registers.a = result;

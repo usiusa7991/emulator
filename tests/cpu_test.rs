@@ -2515,3 +2515,385 @@ fn sub_a_a() {
     assert!(!cpu.registers.f.half_carry);
     assert!(!cpu.registers.f.carry);
 }
+
+#[test]
+fn sbc_a_b() {
+  let mut cpu = CPU::new();
+  // 通常ケース
+  cpu.registers.a = 5;
+  cpu.registers.b = 2;
+  cpu.registers.f.carry = false;
+  cpu.bus.write_byte(0x00, 0x98); // SBC A, B
+  cpu.step();
+  assert_eq!(cpu.registers.a, 3);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(!cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.carry);
+
+  // キャリーあり
+  cpu.pc = 0;
+  cpu.registers.a = 5;
+  cpu.registers.b = 2;
+  cpu.registers.f.carry = true;
+  cpu.bus.write_byte(0x00, 0x98);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 2);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(!cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.carry);
+
+  // ゼロフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 1;
+  cpu.registers.b = 0;
+  cpu.registers.f.carry = true;
+  cpu.bus.write_byte(0x00, 0x98);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0);
+  assert!(cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(!cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.carry);
+
+  // ハーフキャリー
+  cpu.pc = 0;
+  cpu.registers.a = 0x10;
+  cpu.registers.b = 0x01;
+  cpu.registers.f.carry = true;
+  cpu.bus.write_byte(0x00, 0x98);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0x0E);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.carry);
+
+  // キャリーフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 0x00;
+  cpu.registers.b = 0x01;
+  cpu.registers.f.carry = true;
+  cpu.bus.write_byte(0x00, 0x98);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0xFE);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(cpu.registers.f.half_carry);
+  assert!(cpu.registers.f.carry);
+}
+
+#[test]
+fn sbc_a_c() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0x10;
+  cpu.registers.c = 0x01;
+  cpu.registers.f.carry = false;
+  cpu.bus.write_byte(0x00, 0x99);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0x0F);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.carry);
+
+  // キャリーあり
+  cpu.pc = 0;
+  cpu.registers.a = 0x10;
+  cpu.registers.c = 0x01;
+  cpu.registers.f.carry = true;
+  cpu.bus.write_byte(0x00, 0x99);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0x0E);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.carry);
+
+  // ゼロフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 0x01;
+  cpu.registers.c = 0x01;
+  cpu.registers.f.carry = false;
+  cpu.bus.write_byte(0x00, 0x99);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0x00);
+  assert!(cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(!cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.carry);
+
+  // キャリーフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 0x00;
+  cpu.registers.c = 0x01;
+  cpu.registers.f.carry = false;
+  cpu.bus.write_byte(0x00, 0x99);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0xFF);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(cpu.registers.f.half_carry);
+  assert!(cpu.registers.f.carry);
+}
+
+#[test]
+fn sbc_a_d() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0x20;
+  cpu.registers.d = 0x10;
+  cpu.registers.f.carry = false;
+  cpu.bus.write_byte(0x00, 0x9A);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0x10);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(!cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.carry);
+
+  // キャリーあり
+  cpu.pc = 0;
+  cpu.registers.a = 0x20;
+  cpu.registers.d = 0x10;
+  cpu.registers.f.carry = true;
+  cpu.bus.write_byte(0x00, 0x9A);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0x0F);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.carry);
+
+  // ゼロフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 0x01;
+  cpu.registers.d = 0x01;
+  cpu.registers.f.carry = false;
+  cpu.bus.write_byte(0x00, 0x9A);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0x00);
+  assert!(cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(!cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.carry);
+
+  // キャリーフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 0x00;
+  cpu.registers.d = 0x01;
+  cpu.registers.f.carry = false;
+  cpu.bus.write_byte(0x00, 0x9A);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0xFF);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(cpu.registers.f.half_carry);
+  assert!(cpu.registers.f.carry);
+}
+
+#[test]
+fn sbc_a_e() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0x10;
+  cpu.registers.e = 0x01;
+  cpu.registers.f.carry = false;
+  cpu.bus.write_byte(0x00, 0x9B);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0x0F);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.carry);
+
+  // キャリーあり
+  cpu.pc = 0;
+  cpu.registers.a = 0x10;
+  cpu.registers.e = 0x01;
+  cpu.registers.f.carry = true;
+  cpu.bus.write_byte(0x00, 0x9B);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0x0E);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.carry);
+
+  // ゼロフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 0x01;
+  cpu.registers.e = 0x01;
+  cpu.registers.f.carry = false;
+  cpu.bus.write_byte(0x00, 0x9B);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0x00);
+  assert!(cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(!cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.carry);
+
+  // キャリーフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 0x00;
+  cpu.registers.e = 0x01;
+  cpu.registers.f.carry = false;
+  cpu.bus.write_byte(0x00, 0x9B);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0xFF);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(cpu.registers.f.half_carry);
+  assert!(cpu.registers.f.carry);
+}
+
+#[test]
+fn sbc_a_h() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0x80;
+  cpu.registers.h = 0x10;
+  cpu.registers.f.carry = false;
+  cpu.bus.write_byte(0x00, 0x9C);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0x70);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(!cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.carry);
+
+  // キャリーあり
+  cpu.pc = 0;
+  cpu.registers.a = 0x80;
+  cpu.registers.h = 0x10;
+  cpu.registers.f.carry = true;
+  cpu.bus.write_byte(0x00, 0x9C);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0x6F);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.carry);
+
+  // キャリーフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 0x00;
+  cpu.registers.h = 0x01;
+  cpu.registers.f.carry = false;
+  cpu.bus.write_byte(0x00, 0x9C);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0xFF);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(cpu.registers.f.half_carry);
+  assert!(cpu.registers.f.carry);
+}
+
+#[test]
+fn sbc_a_l() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0x10;
+  cpu.registers.l = 0x11;
+  cpu.registers.f.carry = false;
+  cpu.bus.write_byte(0x00, 0x9D);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0xFF);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(cpu.registers.f.half_carry);
+  assert!(cpu.registers.f.carry);
+
+  // キャリーあり
+  cpu.pc = 0;
+  cpu.registers.a = 0x10;
+  cpu.registers.l = 0x11;
+  cpu.registers.f.carry = true;
+  cpu.bus.write_byte(0x00, 0x9D);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0xFE);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(cpu.registers.f.half_carry);
+  assert!(cpu.registers.f.carry);
+
+  // ゼロフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 0x01;
+  cpu.registers.l = 0x01;
+  cpu.registers.f.carry = false;
+  cpu.bus.write_byte(0x00, 0x9D);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0x00);
+  assert!(cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(!cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.carry);
+}
+
+#[test]
+fn sbc_a_hl() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0x22;
+  cpu.registers.set_hl(0x1234);
+  cpu.bus.write_byte(0x1234, 0x02);
+  cpu.registers.f.carry = false;
+  cpu.bus.write_byte(0x00, 0x9E);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0x20);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(!cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.carry);
+
+  // キャリーあり
+  cpu.pc = 0;
+  cpu.registers.a = 0x22;
+  cpu.registers.set_hl(0x1234);
+  cpu.bus.write_byte(0x1234, 0x02);
+  cpu.registers.f.carry = true;
+  cpu.bus.write_byte(0x00, 0x9E);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0x1F);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.carry);
+
+  // キャリーフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 0x00;
+  cpu.registers.set_hl(0x1234);
+  cpu.bus.write_byte(0x1234, 0x01);
+  cpu.registers.f.carry = false;
+  cpu.bus.write_byte(0x00, 0x9E);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0xFF);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(cpu.registers.f.half_carry);
+  assert!(cpu.registers.f.carry);
+}
+
+#[test]
+fn sbc_a_a() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0x55;
+  cpu.registers.f.carry = false;
+  cpu.bus.write_byte(0x00, 0x9F);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0x00);
+  assert!(cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(!cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.carry);
+
+  // キャリーあり
+  cpu.pc = 0;
+  cpu.registers.a = 0x55;
+  cpu.registers.f.carry = true;
+  cpu.bus.write_byte(0x00, 0x9F);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0xFF);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(cpu.registers.f.half_carry);
+  assert!(cpu.registers.f.carry);
+}
