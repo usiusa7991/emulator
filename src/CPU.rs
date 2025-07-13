@@ -473,7 +473,23 @@ impl CPU {
         match source {
           _ => self.pc.wrapping_add(1),
         }
-      }
+      },
+      Instruction::CP(source) => {
+        let source_value = match source {
+          CpSource::A => self.registers.a,
+          CpSource::B => self.registers.b,
+          CpSource::C => self.registers.c,
+          CpSource::D => self.registers.d,
+          CpSource::E => self.registers.e,
+          CpSource::H => self.registers.h,
+          CpSource::L => self.registers.l,
+          CpSource::HLI => self.bus.read_byte(self.registers.get_hl()),
+        };
+        self.cp_a(source_value);
+        match source {
+          _ => self.pc.wrapping_add(1),
+        }
+      },
       Instruction::RLCA => {
         let value = self.registers.a;
         let seventh_bit = value >> 7;
@@ -757,6 +773,16 @@ impl CPU {
         Some(false),
         Some(false),
         Some(false)
+    );
+  }
+
+  fn cp_a(&mut self, value: u8) {
+    let result = self.registers.a.wrapping_sub(value);
+    self.registers.set_f(
+        Some(result == 0),
+        Some(true),
+        Some((self.registers.a & 0x0F) < (value & 0x0F)),
+        Some(self.registers.a < value)
     );
   }
 }

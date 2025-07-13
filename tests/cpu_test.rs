@@ -3417,3 +3417,193 @@ fn or_a_a() {
   assert_eq!(cpu.registers.a, 0);
   assert!(cpu.registers.f.zero);
 }
+
+#[test]
+fn cp_a_b() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 5;
+  cpu.registers.b = 2;
+  cpu.bus.write_byte(0x00, 0xB8); // CP B
+  cpu.step();
+  assert_eq!(cpu.registers.a, 5);
+  assert!(!cpu.registers.f.zero);
+  assert!(cpu.registers.f.subtract);
+  assert!(!cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.carry);
+
+  // ゼロフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 2;
+  cpu.registers.b = 2;
+  cpu.bus.write_byte(0x00, 0xB8);
+  cpu.step();
+  assert!(cpu.registers.f.zero);
+
+  // キャリーフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 1;
+  cpu.registers.b = 2;
+  cpu.bus.write_byte(0x00, 0xB8);
+  cpu.step();
+  assert!(cpu.registers.f.carry);
+}
+
+#[test]
+fn cp_a_c() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 5;
+  cpu.registers.c = 5;
+  cpu.bus.write_byte(0x00, 0xB9); // CP C
+  cpu.step();
+  assert!(cpu.registers.f.zero);
+
+  cpu.pc = 0;
+  cpu.registers.a = 0x10;
+  cpu.registers.c = 0x01;
+  cpu.bus.write_byte(0x00, 0xB9);
+  cpu.step();
+  assert!(cpu.registers.f.half_carry);
+
+  cpu.pc = 0;
+  cpu.registers.a = 0x00;
+  cpu.registers.c = 0x01;
+  cpu.bus.write_byte(0x00, 0xB9);
+  cpu.step();
+  assert!(cpu.registers.f.carry);
+}
+
+#[test]
+fn cp_a_d() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0x10;
+  cpu.registers.d = 0x01;
+  cpu.bus.write_byte(0x00, 0xBA); // CP D
+  cpu.step();
+  assert!(cpu.registers.f.half_carry);
+
+  cpu.pc = 0;
+  cpu.registers.a = 0x01;
+  cpu.registers.d = 0x01;
+  cpu.bus.write_byte(0x00, 0xBA);
+  cpu.step();
+  assert!(cpu.registers.f.zero);
+
+  cpu.pc = 0;
+  cpu.registers.a = 0x00;
+  cpu.registers.d = 0x01;
+  cpu.bus.write_byte(0x00, 0xBA);
+  cpu.step();
+  assert!(cpu.registers.f.carry);
+}
+
+#[test]
+fn cp_a_e() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0x10;
+  cpu.registers.e = 0x01;
+  cpu.bus.write_byte(0x00, 0xBB); // CP E
+  cpu.step();
+  assert!(cpu.registers.f.half_carry);
+
+  cpu.pc = 0;
+  cpu.registers.a = 0x01;
+  cpu.registers.e = 0x01;
+  cpu.bus.write_byte(0x00, 0xBB);
+  cpu.step();
+  assert!(cpu.registers.f.zero);
+
+  cpu.pc = 0;
+  cpu.registers.a = 0x00;
+  cpu.registers.e = 0x01;
+  cpu.bus.write_byte(0x00, 0xBB);
+  cpu.step();
+  assert!(cpu.registers.f.carry);
+}
+
+#[test]
+fn cp_a_h() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0x10;
+  cpu.registers.h = 0x01;
+  cpu.bus.write_byte(0x00, 0xBC); // CP H
+  cpu.step();
+  assert!(cpu.registers.f.half_carry);
+
+  cpu.pc = 0;
+  cpu.registers.a = 0x01;
+  cpu.registers.h = 0x01;
+  cpu.bus.write_byte(0x00, 0xBC);
+  cpu.step();
+  assert!(cpu.registers.f.zero);
+
+  cpu.pc = 0;
+  cpu.registers.a = 0x00;
+  cpu.registers.h = 0x01;
+  cpu.bus.write_byte(0x00, 0xBC);
+  cpu.step();
+  assert!(cpu.registers.f.carry);
+}
+
+#[test]
+fn cp_a_l() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0x10;
+  cpu.registers.l = 0x01;
+  cpu.bus.write_byte(0x00, 0xBD); // CP L
+  cpu.step();
+  assert!(cpu.registers.f.half_carry);
+
+  cpu.pc = 0;
+  cpu.registers.a = 0x01;
+  cpu.registers.l = 0x01;
+  cpu.bus.write_byte(0x00, 0xBD);
+  cpu.step();
+  assert!(cpu.registers.f.zero);
+
+  cpu.pc = 0;
+  cpu.registers.a = 0x00;
+  cpu.registers.l = 0x01;
+  cpu.bus.write_byte(0x00, 0xBD);
+  cpu.step();
+  assert!(cpu.registers.f.carry);
+}
+
+#[test]
+fn cp_a_hli() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0x10;
+  cpu.registers.set_hl(0x1234);
+  cpu.bus.write_byte(0x1234, 0x01);
+  cpu.bus.write_byte(0x00, 0xBE); // CP (HL)
+  cpu.step();
+  assert!(cpu.registers.f.half_carry);
+
+  cpu.pc = 0;
+  cpu.registers.a = 0x01;
+  cpu.bus.write_byte(0x1234, 0x01);
+  cpu.bus.write_byte(0x00, 0xBE);
+  cpu.step();
+  assert!(cpu.registers.f.zero);
+
+  cpu.pc = 0;
+  cpu.registers.a = 0x00;
+  cpu.bus.write_byte(0x1234, 0x01);
+  cpu.bus.write_byte(0x00, 0xBE);
+  cpu.step();
+  assert!(cpu.registers.f.carry);
+}
+
+#[test]
+fn cp_a_a() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0x10;
+  cpu.bus.write_byte(0x00, 0xBF); // CP A
+  cpu.step();
+  assert!(cpu.registers.f.zero);
+
+  cpu.pc = 0;
+  cpu.registers.a = 0x00;
+  cpu.bus.write_byte(0x00, 0xBF);
+  cpu.step();
+  assert!(cpu.registers.f.zero);
+}

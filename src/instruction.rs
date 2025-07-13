@@ -51,6 +51,7 @@ pub enum Instruction {
   AND(AndSource),
   XOR(XorSource),
   OR(OrSource),
+  CP(CpSource),
   JP(JumpTest),
   JR(JumpRelativeConditions),
   LD(LoadType),
@@ -114,6 +115,10 @@ pub enum XorSource {
 }
 
 pub enum OrSource {
+  A, B, C, D, E, H, L, HLI
+}
+
+pub enum CpSource {
   A, B, C, D, E, H, L, HLI
 }
 
@@ -333,6 +338,14 @@ impl Instruction {
       0xB5 => Some(Instruction::OR(OrSource::L)),
       0xB6 => Some(Instruction::OR(OrSource::HLI)),
       0xB7 => Some(Instruction::OR(OrSource::A)),
+      0xB8 => Some(Instruction::CP(CpSource::B)),
+      0xB9 => Some(Instruction::CP(CpSource::C)),
+      0xBA => Some(Instruction::CP(CpSource::D)),
+      0xBB => Some(Instruction::CP(CpSource::E)),
+      0xBC => Some(Instruction::CP(CpSource::H)),
+      0xBD => Some(Instruction::CP(CpSource::L)),
+      0xBE => Some(Instruction::CP(CpSource::HLI)),
+      0xBF => Some(Instruction::CP(CpSource::A)),
       _ => None
     }
   }
