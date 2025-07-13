@@ -441,7 +441,23 @@ impl CPU {
         match source {
           _ => self.pc.wrapping_add(1),
         }
-      }
+      },
+      Instruction::XOR(source) => {
+        let source_value = match source {
+          XorSource::A => self.registers.a,
+          XorSource::B => self.registers.b,
+          XorSource::C => self.registers.c,
+          XorSource::D => self.registers.d,
+          XorSource::E => self.registers.e,
+          XorSource::H => self.registers.h,
+          XorSource::L => self.registers.l,
+          XorSource::HLI => self.bus.read_byte(self.registers.get_hl()),
+        };
+        self.xor_a(source_value);
+        match source {
+          _ => self.pc.wrapping_add(1),
+        }
+      },
       Instruction::RLCA => {
         let value = self.registers.a;
         let seventh_bit = value >> 7;
@@ -702,6 +718,17 @@ impl CPU {
         Some(result == 0),
         Some(false),
         Some(true),
+        Some(false)
+    );
+  }
+
+  fn xor_a(&mut self, value: u8) {
+    let result = self.registers.a ^ value;
+    self.registers.a = result;
+    self.registers.set_f(
+        Some(result == 0),
+        Some(false),
+        Some(false),
         Some(false)
     );
   }
