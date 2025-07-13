@@ -50,6 +50,7 @@ pub enum Instruction {
   DEC(IncDecTarget),
   AND(AndSource),
   XOR(XorSource),
+  OR(OrSource),
   JP(JumpTest),
   JR(JumpRelativeConditions),
   LD(LoadType),
@@ -109,6 +110,10 @@ pub enum AndSource {
 }
 
 pub enum XorSource {
+  A, B, C, D, E, H, L, HLI
+}
+
+pub enum OrSource {
   A, B, C, D, E, H, L, HLI
 }
 
@@ -320,6 +325,14 @@ impl Instruction {
       0xAD => Some(Instruction::XOR(XorSource::L)),
       0xAE => Some(Instruction::XOR(XorSource::HLI)),
       0xAF => Some(Instruction::XOR(XorSource::A)),
+      0xB0 => Some(Instruction::OR(OrSource::B)),
+      0xB1 => Some(Instruction::OR(OrSource::C)),
+      0xB2 => Some(Instruction::OR(OrSource::D)),
+      0xB3 => Some(Instruction::OR(OrSource::E)),
+      0xB4 => Some(Instruction::OR(OrSource::H)),
+      0xB5 => Some(Instruction::OR(OrSource::L)),
+      0xB6 => Some(Instruction::OR(OrSource::HLI)),
+      0xB7 => Some(Instruction::OR(OrSource::A)),
       _ => None
     }
   }

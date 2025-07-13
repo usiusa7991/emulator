@@ -3224,3 +3224,196 @@ fn xor_a_a() {
   assert_eq!(cpu.registers.a, 0);
   assert!(cpu.registers.f.zero);
 }
+
+#[test]
+fn or_a_b() {
+  let mut cpu = CPU::new();
+  // 通常
+  cpu.registers.a = 0b1100_1100;
+  cpu.registers.b = 0b1010_1010;
+  cpu.bus.write_byte(0x00, 0xB0); // OR B
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0b1110_1110);
+  assert!(!cpu.registers.f.zero);
+  assert!(!cpu.registers.f.carry);
+  assert!(!cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.subtract);
+
+  // ゼロフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 0;
+  cpu.registers.b = 0;
+  cpu.bus.write_byte(0x00, 0xB0);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0);
+  assert!(cpu.registers.f.zero);
+
+  // 片方が0
+  cpu.pc = 0;
+  cpu.registers.a = 0b0000_0000;
+  cpu.registers.b = 0b1111_1111;
+  cpu.bus.write_byte(0x00, 0xB0);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0b1111_1111);
+  assert!(!cpu.registers.f.zero);
+}
+
+#[test]
+fn or_a_c() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0b0101_0000;
+  cpu.registers.c = 0b0000_1010;
+  cpu.bus.write_byte(0x00, 0xB1); // OR C
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0b0101_1010);
+  assert!(!cpu.registers.f.zero);
+  assert!(!cpu.registers.f.carry);
+  assert!(!cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.subtract);
+
+  // ゼロフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 0;
+  cpu.registers.c = 0;
+  cpu.bus.write_byte(0x00, 0xB1);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0);
+  assert!(cpu.registers.f.zero);
+}
+
+#[test]
+fn or_a_d() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0b0000_1111;
+  cpu.registers.d = 0b1111_0000;
+  cpu.bus.write_byte(0x00, 0xB2); // OR D
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0b1111_1111);
+  assert!(!cpu.registers.f.zero);
+  assert!(!cpu.registers.f.carry);
+  assert!(!cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.subtract);
+
+  // ゼロフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 0;
+  cpu.registers.d = 0;
+  cpu.bus.write_byte(0x00, 0xB2);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0);
+  assert!(cpu.registers.f.zero);
+}
+
+#[test]
+fn or_a_e() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0b1010_0000;
+  cpu.registers.e = 0b0000_0101;
+  cpu.bus.write_byte(0x00, 0xB3); // OR E
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0b1010_0101);
+  assert!(!cpu.registers.f.zero);
+  assert!(!cpu.registers.f.carry);
+  assert!(!cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.subtract);
+
+  // ゼロフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 0;
+  cpu.registers.e = 0;
+  cpu.bus.write_byte(0x00, 0xB3);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0);
+  assert!(cpu.registers.f.zero);
+}
+
+#[test]
+fn or_a_h() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0b0000_0001;
+  cpu.registers.h = 0b0000_0010;
+  cpu.bus.write_byte(0x00, 0xB4); // OR H
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0b0000_0011);
+  assert!(!cpu.registers.f.zero);
+  assert!(!cpu.registers.f.carry);
+  assert!(!cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.subtract);
+
+  // ゼロフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 0;
+  cpu.registers.h = 0;
+  cpu.bus.write_byte(0x00, 0xB4);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0);
+  assert!(cpu.registers.f.zero);
+}
+
+#[test]
+fn or_a_l() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0b1111_0000;
+  cpu.registers.l = 0b0000_1111;
+  cpu.bus.write_byte(0x00, 0xB5); // OR L
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0b1111_1111);
+  assert!(!cpu.registers.f.zero);
+  assert!(!cpu.registers.f.carry);
+  assert!(!cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.subtract);
+
+  // ゼロフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 0;
+  cpu.registers.l = 0;
+  cpu.bus.write_byte(0x00, 0xB5);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0);
+  assert!(cpu.registers.f.zero);
+}
+
+#[test]
+fn or_a_hli() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0b0000_1100;
+  cpu.registers.set_hl(0x1234);
+  cpu.bus.write_byte(0x1234, 0b0011_0000);
+  cpu.bus.write_byte(0x00, 0xB6); // OR (HL)
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0b0011_1100);
+  assert!(!cpu.registers.f.zero);
+  assert!(!cpu.registers.f.carry);
+  assert!(!cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.subtract);
+
+  // ゼロフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 0;
+  cpu.bus.write_byte(0x1234, 0);
+  cpu.bus.write_byte(0x00, 0xB6);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0);
+  assert!(cpu.registers.f.zero);
+}
+
+#[test]
+fn or_a_a() {
+  let mut cpu = CPU::new();
+  cpu.registers.a = 0b1010_1010;
+  cpu.bus.write_byte(0x00, 0xB7); // OR A
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0b1010_1010);
+  assert!(!cpu.registers.f.zero);
+  assert!(!cpu.registers.f.carry);
+  assert!(!cpu.registers.f.half_carry);
+  assert!(!cpu.registers.f.subtract);
+
+  // ゼロフラグ
+  cpu.pc = 0;
+  cpu.registers.a = 0;
+  cpu.bus.write_byte(0x00, 0xB7);
+  cpu.step();
+  assert_eq!(cpu.registers.a, 0);
+  assert!(cpu.registers.f.zero);
+}
