@@ -168,19 +168,19 @@ impl CPU {
       Instruction::JR(conditions) => {
         let skip_counts = self.read_next_byte() as i8;
         let condition_flag = match conditions {
-          JumpRelativeConditions::Always => {
+          JumpConditions::Always => {
             true
           },
-          JumpRelativeConditions::NoZeroFlag => {
+          JumpConditions::NoZeroFlag => {
             self.registers.f.zero == false
           },
-          JumpRelativeConditions::ZeroFlag => {
+          JumpConditions::ZeroFlag => {
             self.registers.f.zero == true
           },
-          JumpRelativeConditions::NoCarryFlag => {
+          JumpConditions::NoCarryFlag => {
             self.registers.f.carry == false
           },
-          JumpRelativeConditions::CarryFlag => {
+          JumpConditions::CarryFlag => {
             self.registers.f.carry == true
           },
         };

@@ -6,7 +6,7 @@ pub enum JumpTest {
   Always
 }
 
-pub enum JumpRelativeConditions {
+pub enum JumpConditions {
   NoZeroFlag,
   ZeroFlag,
   NoCarryFlag,
@@ -60,7 +60,7 @@ pub enum Instruction {
   OR(OrSource),
   CP(CpSource),
   JP(JumpTest),
-  JR(JumpRelativeConditions),
+  JR(JumpConditions),
   RET(RetConditions),
   LD(LoadType),
   RLCA,
@@ -186,7 +186,7 @@ impl Instruction {
       0x15 => Some(Instruction::DEC(IncDecTarget::D)),
       0x16 => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::D, LoadByteSource::D8))),
       0x17 => Some(Instruction::RLA),
-      0x18 => Some(Instruction::JR(JumpRelativeConditions::Always)),
+      0x18 => Some(Instruction::JR(JumpConditions::Always)),
       0x19 => Some(Instruction::ADD(AddType::TwoByte(AddTwoByteTarget::HL, AddTwoByteSource::DE))),
       0x1A => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::A, LoadByteSource::DEI))),
       0x1B => Some(Instruction::DEC(IncDecTarget::DE)),
@@ -194,7 +194,7 @@ impl Instruction {
       0x1D => Some(Instruction::DEC(IncDecTarget::E)),
       0x1E => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::E, LoadByteSource::D8))),
       0x1F => Some(Instruction::RRA),
-      0x20 => Some(Instruction::JR(JumpRelativeConditions::NoZeroFlag)),
+      0x20 => Some(Instruction::JR(JumpConditions::NoZeroFlag)),
       0x21 => Some(Instruction::LD(LoadType::TwoByte(LoadTwoByteTarget::HL, LoadTwoByteSource::D16))),
       0x22 => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::HLIP, LoadByteSource::A))),
       0x23 => Some(Instruction::INC(IncDecTarget::HL)),
@@ -202,7 +202,7 @@ impl Instruction {
       0x25 => Some(Instruction::DEC(IncDecTarget::H)),
       0x26 => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::H, LoadByteSource::D8))),
       0x27 => Some(Instruction::DAA),
-      0x28 => Some(Instruction::JR(JumpRelativeConditions::ZeroFlag)),
+      0x28 => Some(Instruction::JR(JumpConditions::ZeroFlag)),
       0x29 => Some(Instruction::ADD(AddType::TwoByte(AddTwoByteTarget::HL, AddTwoByteSource::HL))),
       0x2A => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::A, LoadByteSource::HLIP))),
       0x2B => Some(Instruction::DEC(IncDecTarget::HL)),
@@ -210,7 +210,7 @@ impl Instruction {
       0x2D => Some(Instruction::DEC(IncDecTarget::L)),
       0x2E => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::L, LoadByteSource::D8))),
       0x2F => Some(Instruction::CPL),
-      0x30 => Some(Instruction::JR(JumpRelativeConditions::NoCarryFlag)),
+      0x30 => Some(Instruction::JR(JumpConditions::NoCarryFlag)),
       0x31 => Some(Instruction::LD(LoadType::TwoByte(LoadTwoByteTarget::SP, LoadTwoByteSource::D16))),
       0x32 => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::HLIM, LoadByteSource::A))),
       0x33 => Some(Instruction::INC(IncDecTarget::SP)),
@@ -218,7 +218,7 @@ impl Instruction {
       0x35 => Some(Instruction::DEC(IncDecTarget::HLI)),
       0x36 => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::HLI, LoadByteSource::D8))),
       0x37 => Some(Instruction::SCF),
-      0x38 => Some(Instruction::JR(JumpRelativeConditions::CarryFlag)),
+      0x38 => Some(Instruction::JR(JumpConditions::CarryFlag)),
       0x39 => Some(Instruction::ADD(AddType::TwoByte(AddTwoByteTarget::HL, AddTwoByteSource::SP))),
       0x3A => Some(Instruction::LD(LoadType::Byte(LoadByteTarget::A, LoadByteSource::HLIM))),
       0x3B => Some(Instruction::DEC(IncDecTarget::SP)),
