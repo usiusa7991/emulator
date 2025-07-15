@@ -40,14 +40,10 @@ impl CPU {
     self.bus.read_byte(self.pc + 1)
   }
 
-  fn call(&mut self, should_jump: bool) -> u16 {
+  fn call(&mut self) -> u16 {
     let next_pc = self.pc.wrapping_add(3);
-    if should_jump {
-      self.push(next_pc);
-      1234
-    } else {
-      next_pc
-    }
+    self.push(next_pc);
+    self.read_immediate_16bit()
   }
 
   fn return_(&mut self, should_jump: bool) -> u16 {
@@ -312,12 +308,19 @@ impl CPU {
         };
         self.pc.wrapping_add(1)
       },
-      Instruction::CALL(test) => {
-        let jump_condition = match test {
-            JumpConditions::NoZeroFlag => !self.registers.f.zero,
-            _ => { panic!("TODO: support more conditions") }
+      Instruction::CALL(conditions) => {
+        let condition_flag = match conditions {
+          CallConditions::NoZeroFlag => !self.registers.f.zero,
+          CallConditions::NoCarryFlag => !self.registers.f.carry,
+          CallConditions::ZeroFlag => self.registers.f.zero,
+          CallConditions::CarryFlag => self.registers.f.carry,
+          CallConditions::Always => true,
         };
-        self.call(jump_condition)
+        if condition_flag {
+          self.call()
+        } else {
+          self.pc.wrapping_add(3)
+        }
       },
       Instruction::INC(target) => {
         match target {

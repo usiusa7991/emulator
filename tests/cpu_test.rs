@@ -3694,6 +3694,37 @@ fn jp_a16() {
 }
 
 #[test]
+fn call_nz_a16() {
+    let mut cpu = CPU::new();
+    // Zeroフラグが0（ジャンプする場合）
+    cpu.registers.f.zero = false;
+    cpu.pc = 0x100;
+    cpu.bus.write_byte(0x100, 0xC4); // CALL NZ, a16
+    cpu.bus.write_byte(0x101, 0x34); // LSB
+    cpu.bus.write_byte(0x102, 0x12); // MSB
+    cpu.sp = 0xFFFE;
+    cpu.step();
+    // ジャンプ先
+    assert_eq!(cpu.pc, 0x1234);
+    // リターンアドレスが積まれている
+    assert_eq!(cpu.sp, 0xFFFC);
+    assert_eq!(cpu.bus.read_byte(0xFFFC), 0x03); // LSB (0x100+3)
+    assert_eq!(cpu.bus.read_byte(0xFFFD), 0x01); // MSB
+
+    // Zeroフラグが1（ジャンプしない場合）
+    let mut cpu = CPU::new();
+    cpu.registers.f.zero = true;
+    cpu.pc = 0x200;
+    cpu.bus.write_byte(0x200, 0xC4);
+    cpu.bus.write_byte(0x201, 0x34);
+    cpu.bus.write_byte(0x202, 0x12);
+    cpu.sp = 0xFFFE;
+    cpu.step();
+    assert_eq!(cpu.pc, 0x203);
+    assert_eq!(cpu.sp, 0xFFFE);
+}
+
+#[test]
 fn ret_z() {
   let mut cpu = CPU::new();
 
@@ -3773,6 +3804,50 @@ fn jp_z_a16() {
 }
 
 #[test]
+fn call_z_a16() {
+    let mut cpu = CPU::new();
+    // Zeroフラグが1（ジャンプする場合）
+    cpu.registers.f.zero = true;
+    cpu.pc = 0x100;
+    cpu.bus.write_byte(0x100, 0xCC); // CALL Z, a16
+    cpu.bus.write_byte(0x101, 0x78); // LSB
+    cpu.bus.write_byte(0x102, 0x56); // MSB
+    cpu.sp = 0xFFFE;
+    cpu.step();
+    assert_eq!(cpu.pc, 0x5678);
+    assert_eq!(cpu.sp, 0xFFFC);
+    assert_eq!(cpu.bus.read_byte(0xFFFC), 0x03);
+    assert_eq!(cpu.bus.read_byte(0xFFFD), 0x01);
+
+    // Zeroフラグが0（ジャンプしない場合）
+    let mut cpu = CPU::new();
+    cpu.registers.f.zero = false;
+    cpu.pc = 0x200;
+    cpu.bus.write_byte(0x200, 0xCC);
+    cpu.bus.write_byte(0x201, 0x78);
+    cpu.bus.write_byte(0x202, 0x56);
+    cpu.sp = 0xFFFE;
+    cpu.step();
+    assert_eq!(cpu.pc, 0x203);
+    assert_eq!(cpu.sp, 0xFFFE);
+}
+
+#[test]
+fn call_a16() {
+    let mut cpu = CPU::new();
+    cpu.pc = 0x100;
+    cpu.bus.write_byte(0x100, 0xCD); // CALL a16
+    cpu.bus.write_byte(0x101, 0x9A); // LSB
+    cpu.bus.write_byte(0x102, 0x78); // MSB
+    cpu.sp = 0xFFFE;
+    cpu.step();
+    assert_eq!(cpu.pc, 0x789A);
+    assert_eq!(cpu.sp, 0xFFFC);
+    assert_eq!(cpu.bus.read_byte(0xFFFC), 0x03);
+    assert_eq!(cpu.bus.read_byte(0xFFFD), 0x01);
+}
+
+#[test]
 fn ret_nc() {
   let mut cpu = CPU::new();
 
@@ -3846,6 +3921,35 @@ fn jp_nc_a16() {
 }
 
 #[test]
+fn call_nc_a16() {
+    let mut cpu = CPU::new();
+    // Carryフラグが0（ジャンプする場合）
+    cpu.registers.f.carry = false;
+    cpu.pc = 0x100;
+    cpu.bus.write_byte(0x100, 0xD4); // CALL NC, a16
+    cpu.bus.write_byte(0x101, 0x56); // LSB
+    cpu.bus.write_byte(0x102, 0x34); // MSB
+    cpu.sp = 0xFFFE;
+    cpu.step();
+    assert_eq!(cpu.pc, 0x3456);
+    assert_eq!(cpu.sp, 0xFFFC);
+    assert_eq!(cpu.bus.read_byte(0xFFFC), 0x03);
+    assert_eq!(cpu.bus.read_byte(0xFFFD), 0x01);
+
+    // Carryフラグが1（ジャンプしない場合）
+    let mut cpu = CPU::new();
+    cpu.registers.f.carry = true;
+    cpu.pc = 0x200;
+    cpu.bus.write_byte(0x200, 0xD4);
+    cpu.bus.write_byte(0x201, 0x56);
+    cpu.bus.write_byte(0x202, 0x34);
+    cpu.sp = 0xFFFE;
+    cpu.step();
+    assert_eq!(cpu.pc, 0x203);
+    assert_eq!(cpu.sp, 0xFFFE);
+}
+
+#[test]
 fn ret_c() {
   let mut cpu = CPU::new();
 
@@ -3902,6 +4006,35 @@ fn jp_c_a16() {
     cpu.bus.write_byte(0x02, 0x78);
     cpu.step();
     assert_eq!(cpu.pc, 0x03);
+}
+
+#[test]
+fn call_c_a16() {
+    let mut cpu = CPU::new();
+    // Carryフラグが1（ジャンプする場合）
+    cpu.registers.f.carry = true;
+    cpu.pc = 0x100;
+    cpu.bus.write_byte(0x100, 0xDC); // CALL C, a16
+    cpu.bus.write_byte(0x101, 0xEF); // LSB
+    cpu.bus.write_byte(0x102, 0xBE); // MSB
+    cpu.sp = 0xFFFE;
+    cpu.step();
+    assert_eq!(cpu.pc, 0xBEEF);
+    assert_eq!(cpu.sp, 0xFFFC);
+    assert_eq!(cpu.bus.read_byte(0xFFFC), 0x03);
+    assert_eq!(cpu.bus.read_byte(0xFFFD), 0x01);
+
+    // Carryフラグが0（ジャンプしない場合）
+    let mut cpu = CPU::new();
+    cpu.registers.f.carry = false;
+    cpu.pc = 0x200;
+    cpu.bus.write_byte(0x200, 0xDC);
+    cpu.bus.write_byte(0x201, 0xEF);
+    cpu.bus.write_byte(0x202, 0xBE);
+    cpu.sp = 0xFFFE;
+    cpu.step();
+    assert_eq!(cpu.pc, 0x203);
+    assert_eq!(cpu.sp, 0xFFFE);
 }
 
 #[test]

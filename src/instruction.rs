@@ -15,6 +15,14 @@ pub enum JumpRelativeConditions {
   Always
 }
 
+pub enum CallConditions {
+  NoZeroFlag,
+  ZeroFlag,
+  NoCarryFlag,
+  CarryFlag,
+  Always
+}
+
 pub enum RetConditions {
   NoZeroFlag,
   ZeroFlag,
@@ -52,7 +60,7 @@ pub enum Instruction {
   SBC(SbcSource),
   PUSH(StackTarget),
   POP(StackTarget),
-  CALL(JumpConditions),
+  CALL(CallConditions),
   RLC(PrefixTarget),
   INC(IncDecTarget),
   DEC(IncDecTarget),
@@ -359,12 +367,17 @@ impl Instruction {
       0xC1 => Some(Instruction::POP(StackTarget::BC)),
       0xC2 => Some(Instruction::JP(JumpConditions::NoZeroFlag)),
       0xC3 => Some(Instruction::JP(JumpConditions::Always)),
+      0xC4 => Some(Instruction::CALL(CallConditions::NoZeroFlag)),
+      0xCC => Some(Instruction::CALL(CallConditions::ZeroFlag)),
+      0xCD => Some(Instruction::CALL(CallConditions::Always)),
       0xC8 => Some(Instruction::RET(RetConditions::ZeroFlag)),
       0xC9 => Some(Instruction::RET(RetConditions::Always)),
       0xCA => Some(Instruction::JP(JumpConditions::ZeroFlag)),
       0xD0 => Some(Instruction::RET(RetConditions::NoCarryFlag)),
       0xD1 => Some(Instruction::POP(StackTarget::DE)),
       0xD2 => Some(Instruction::JP(JumpConditions::NoCarryFlag)),
+      0xD4 => Some(Instruction::CALL(CallConditions::NoCarryFlag)),
+      0xDC => Some(Instruction::CALL(CallConditions::CarryFlag)),
       0xD8 => Some(Instruction::RET(RetConditions::CarryFlag)),
       0xDA => Some(Instruction::JP(JumpConditions::CarryFlag)),
       0xE1 => Some(Instruction::POP(StackTarget::HL)),
