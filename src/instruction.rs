@@ -140,11 +140,11 @@ pub enum CpSource {
 }
 
 pub enum PrefixTarget {
-  A, B, C, D, E, H, L, HLI
+	A, B, C, D, E, H, L, HLI
 }
 
 pub enum StackTarget {
-  AF, BC, DE, HL
+	AF, BC, DE, HL
 }
 
 impl Instruction {
@@ -368,6 +368,7 @@ impl Instruction {
       0xC2 => Some(Instruction::JP(JumpConditions::NoZeroFlag)),
       0xC3 => Some(Instruction::JP(JumpConditions::Always)),
       0xC4 => Some(Instruction::CALL(CallConditions::NoZeroFlag)),
+      0xC5 => Some(Instruction::PUSH(StackTarget::BC)),
       0xCC => Some(Instruction::CALL(CallConditions::ZeroFlag)),
       0xCD => Some(Instruction::CALL(CallConditions::Always)),
       0xC8 => Some(Instruction::RET(RetConditions::ZeroFlag)),
@@ -377,12 +378,15 @@ impl Instruction {
       0xD1 => Some(Instruction::POP(StackTarget::DE)),
       0xD2 => Some(Instruction::JP(JumpConditions::NoCarryFlag)),
       0xD4 => Some(Instruction::CALL(CallConditions::NoCarryFlag)),
+      0xD5 => Some(Instruction::PUSH(StackTarget::DE)),
       0xDC => Some(Instruction::CALL(CallConditions::CarryFlag)),
       0xD8 => Some(Instruction::RET(RetConditions::CarryFlag)),
       0xDA => Some(Instruction::JP(JumpConditions::CarryFlag)),
       0xE1 => Some(Instruction::POP(StackTarget::HL)),
+      0xE5 => Some(Instruction::PUSH(StackTarget::HL)),
       0xE9 => Some(Instruction::JP(JumpConditions::HL)),
       0xF1 => Some(Instruction::POP(StackTarget::AF)),
+      0xF5 => Some(Instruction::PUSH(StackTarget::AF)),
       _ => None
     }
   }

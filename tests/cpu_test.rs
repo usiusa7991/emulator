@@ -3725,6 +3725,22 @@ fn call_nz_a16() {
 }
 
 #[test]
+fn push_bc() {
+    let mut cpu = CPU::new();
+    cpu.registers.set_bc(0x1234);
+    cpu.sp = 0xFFFE;
+    cpu.bus.write_byte(0x00, 0xC5); // PUSH BC
+    cpu.step();
+    // SPが2減る
+    assert_eq!(cpu.sp, 0xFFFC);
+    // スタック上の値を確認（SP, SP+1）
+    assert_eq!(cpu.bus.read_byte(0xFFFC), 0x34); // LSB
+    assert_eq!(cpu.bus.read_byte(0xFFFD), 0x12); // MSB
+    // PCが1進む
+    assert_eq!(cpu.pc, 0x01);
+}
+
+#[test]
 fn ret_z() {
   let mut cpu = CPU::new();
 
@@ -4038,6 +4054,19 @@ fn call_c_a16() {
 }
 
 #[test]
+fn push_de() {
+    let mut cpu = CPU::new();
+    cpu.registers.set_de(0x5678);
+    cpu.sp = 0xFFFE;
+    cpu.bus.write_byte(0x00, 0xD5); // PUSH DE
+    cpu.step();
+    assert_eq!(cpu.sp, 0xFFFC);
+    assert_eq!(cpu.bus.read_byte(0xFFFC), 0x78); // LSB
+    assert_eq!(cpu.bus.read_byte(0xFFFD), 0x56); // MSB
+    assert_eq!(cpu.pc, 0x01);
+}
+
+#[test]
 fn pop_hl() {
     let mut cpu = CPU::new();
     cpu.sp = 0xFFFC;
@@ -4048,6 +4077,19 @@ fn pop_hl() {
     cpu.step();
     assert_eq!(cpu.registers.get_hl(), 0x9ABC);
     assert_eq!(cpu.sp, 0xFFFE);
+    assert_eq!(cpu.pc, 0x01);
+}
+
+#[test]
+fn push_hl() {
+    let mut cpu = CPU::new();
+    cpu.registers.set_hl(0x9ABC);
+    cpu.sp = 0xFFFE;
+    cpu.bus.write_byte(0x00, 0xE5); // PUSH HL
+    cpu.step();
+    assert_eq!(cpu.sp, 0xFFFC);
+    assert_eq!(cpu.bus.read_byte(0xFFFC), 0xBC); // LSB
+    assert_eq!(cpu.bus.read_byte(0xFFFD), 0x9A); // MSB
     assert_eq!(cpu.pc, 0x01);
 }
 
@@ -4072,4 +4114,17 @@ fn jp_hl() {
     cpu.bus.write_byte(0x00, 0xE9); // JP (HL)
     cpu.step();
     assert_eq!(cpu.pc, 0xBEEF);
+}
+
+#[test]
+fn push_af() {
+    let mut cpu = CPU::new();
+    cpu.registers.set_af(0x0DF0);
+    cpu.sp = 0xFFFE;
+    cpu.bus.write_byte(0x00, 0xF5); // PUSH AF
+    cpu.step();
+    assert_eq!(cpu.sp, 0xFFFC);
+    assert_eq!(cpu.bus.read_byte(0xFFFC), 0xF0); // LSB (Flags)
+    assert_eq!(cpu.bus.read_byte(0xFFFD), 0x0D); // MSB (A)
+    assert_eq!(cpu.pc, 0x01);
 }

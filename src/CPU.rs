@@ -293,7 +293,9 @@ impl CPU {
       Instruction::PUSH(target) => {
         let value = match target {
           StackTarget::BC => self.registers.get_bc(),
-          _ => { panic!("TODO: support more targets") }
+          StackTarget::DE => self.registers.get_de(),
+          StackTarget::HL => self.registers.get_hl(),
+          StackTarget::AF => self.registers.get_af(),
         };
         self.push(value);
         self.pc.wrapping_add(1)
