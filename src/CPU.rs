@@ -44,7 +44,7 @@ impl CPU {
     let next_pc = self.pc.wrapping_add(3);
     if should_jump {
       self.push(next_pc);
-      self.jump(true)
+      1234
     } else {
       next_pc
     }
@@ -121,15 +121,22 @@ impl CPU {
           _ => self.pc.wrapping_add(1),
         }
       },
-      Instruction::JP(test) => {
-        let jump_condition = match test {
-            JumpTest::NotZero => !self.registers.f.zero,
-            JumpTest::NotCarry => !self.registers.f.carry,
-            JumpTest::Zero => self.registers.f.zero,
-            JumpTest::Carry => self.registers.f.carry,
-            JumpTest::Always => true
+      Instruction::JP(condition) => {
+        let condition_flag = match condition {
+          JumpConditions::NoZeroFlag => !self.registers.f.zero,
+          JumpConditions::NoCarryFlag => !self.registers.f.carry,
+          JumpConditions::ZeroFlag => self.registers.f.zero,
+          JumpConditions::CarryFlag => self.registers.f.carry,
+          JumpConditions::Always => true,
+          JumpConditions::HL => true,
         };
-        self.jump(jump_condition)
+        if let JumpConditions::HL = condition {
+          self.registers.get_hl()
+        } else if condition_flag {
+          self.read_immediate_16bit()
+        } else {
+          self.pc.wrapping_add(3)
+        }
       },
       Instruction::SUB(source) => {
         let source_value = match source {
@@ -168,19 +175,19 @@ impl CPU {
       Instruction::JR(conditions) => {
         let skip_counts = self.read_next_byte() as i8;
         let condition_flag = match conditions {
-          JumpConditions::Always => {
+          JumpRelativeConditions::Always => {
             true
           },
-          JumpConditions::NoZeroFlag => {
+          JumpRelativeConditions::NoZeroFlag => {
             self.registers.f.zero == false
           },
-          JumpConditions::ZeroFlag => {
+          JumpRelativeConditions::ZeroFlag => {
             self.registers.f.zero == true
           },
-          JumpConditions::NoCarryFlag => {
+          JumpRelativeConditions::NoCarryFlag => {
             self.registers.f.carry == false
           },
-          JumpConditions::CarryFlag => {
+          JumpRelativeConditions::CarryFlag => {
             self.registers.f.carry == true
           },
         };
@@ -307,7 +314,7 @@ impl CPU {
       },
       Instruction::CALL(test) => {
         let jump_condition = match test {
-            JumpTest::NotZero => !self.registers.f.zero,
+            JumpConditions::NoZeroFlag => !self.registers.f.zero,
             _ => { panic!("TODO: support more conditions") }
         };
         self.call(jump_condition)
@@ -615,21 +622,6 @@ impl CPU {
 
     self.pc = next_pc;
     println!("{}", next_pc);
-  }
-
-  fn jump(&self, should_jump: bool) -> u16 {
-    if should_jump {
-      // Gameboy is little endian so read pc + 2 as most significant bit
-      // and pc + 1 as least significant bit
-      let least_significant_byte = self.bus.read_byte(self.pc + 1) as u16;
-      let most_significant_byte = self.bus.read_byte(self.pc + 2) as u16;
-      (most_significant_byte << 8) | least_significant_byte
-    } else {
-      // If we don't jump we need to still move the program
-      // counter forward by 3 since the jump instruction is
-      // 3 bytes wide (1 byte for tag and 2 bytes for jump address)
-      self.pc.wrapping_add(3)
-    }
   }
 
   fn push(&mut self, value: u16) {

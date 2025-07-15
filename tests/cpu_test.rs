@@ -3664,6 +3664,36 @@ fn pop_bc() {
 }
 
 #[test]
+fn jp_nz_a16() {
+    let mut cpu = CPU::new();
+    // Zeroフラグが0（ジャンプする場合）
+    cpu.registers.f.zero = false;
+    cpu.bus.write_byte(0x00, 0xC2); // JP NZ, a16
+    cpu.bus.write_byte(0x01, 0x34); // LSB
+    cpu.bus.write_byte(0x02, 0x12); // MSB
+    cpu.step();
+    assert_eq!(cpu.pc, 0x1234);
+
+    // Zeroフラグが1（ジャンプしない場合）
+    let mut cpu = CPU::new();
+    cpu.registers.f.zero = true;
+    cpu.bus.write_byte(0x00, 0xC2);
+    cpu.bus.write_byte(0x01, 0x34);
+    cpu.bus.write_byte(0x02, 0x12);
+    cpu.step();
+    assert_eq!(cpu.pc, 0x03);
+}
+
+fn jp_a16() {
+  let mut cpu = CPU::new();
+  cpu.bus.write_byte(0x00, 0xC3); // JP a16
+  cpu.bus.write_byte(0x01, 0x78); // LSB
+  cpu.bus.write_byte(0x02, 0x56); // MSB
+  cpu.step();
+  assert_eq!(cpu.pc, 0x5678);
+}
+
+#[test]
 fn ret_z() {
   let mut cpu = CPU::new();
 
@@ -3722,6 +3752,27 @@ fn ret() {
 }
 
 #[test]
+fn jp_z_a16() {
+    let mut cpu = CPU::new();
+    // Zeroフラグが1（ジャンプする場合）
+    cpu.registers.f.zero = true;
+    cpu.bus.write_byte(0x00, 0xCA); // JP Z, a16
+    cpu.bus.write_byte(0x01, 0xCD); // LSB
+    cpu.bus.write_byte(0x02, 0xAB); // MSB
+    cpu.step();
+    assert_eq!(cpu.pc, 0xABCD);
+
+    // Zeroフラグが0（ジャンプしない場合）
+    let mut cpu = CPU::new();
+    cpu.registers.f.zero = false;
+    cpu.bus.write_byte(0x00, 0xCA);
+    cpu.bus.write_byte(0x01, 0xCD);
+    cpu.bus.write_byte(0x02, 0xAB);
+    cpu.step();
+    assert_eq!(cpu.pc, 0x03);
+}
+
+#[test]
 fn ret_nc() {
   let mut cpu = CPU::new();
 
@@ -3774,6 +3825,27 @@ fn pop_de() {
 }
 
 #[test]
+fn jp_nc_a16() {
+    let mut cpu = CPU::new();
+    // Carryフラグが0（ジャンプする場合）
+    cpu.registers.f.carry = false;
+    cpu.bus.write_byte(0x00, 0xD2); // JP NC, a16
+    cpu.bus.write_byte(0x01, 0x56); // LSB
+    cpu.bus.write_byte(0x02, 0x34); // MSB
+    cpu.step();
+    assert_eq!(cpu.pc, 0x3456);
+
+    // Carryフラグが1（ジャンプしない場合）
+    let mut cpu = CPU::new();
+    cpu.registers.f.carry = true;
+    cpu.bus.write_byte(0x00, 0xD2);
+    cpu.bus.write_byte(0x01, 0x56);
+    cpu.bus.write_byte(0x02, 0x34);
+    cpu.step();
+    assert_eq!(cpu.pc, 0x03);
+}
+
+#[test]
 fn ret_c() {
   let mut cpu = CPU::new();
 
@@ -3812,6 +3884,27 @@ fn ret_c() {
 }
 
 #[test]
+fn jp_c_a16() {
+    let mut cpu = CPU::new();
+    // Carryフラグが1（ジャンプする場合）
+    cpu.registers.f.carry = true;
+    cpu.bus.write_byte(0x00, 0xDA); // JP C, a16
+    cpu.bus.write_byte(0x01, 0x9A); // LSB
+    cpu.bus.write_byte(0x02, 0x78); // MSB
+    cpu.step();
+    assert_eq!(cpu.pc, 0x789A);
+
+    // Carryフラグが0（ジャンプしない場合）
+    let mut cpu = CPU::new();
+    cpu.registers.f.carry = false;
+    cpu.bus.write_byte(0x00, 0xDA);
+    cpu.bus.write_byte(0x01, 0x9A);
+    cpu.bus.write_byte(0x02, 0x78);
+    cpu.step();
+    assert_eq!(cpu.pc, 0x03);
+}
+
+#[test]
 fn pop_hl() {
     let mut cpu = CPU::new();
     cpu.sp = 0xFFFC;
@@ -3837,4 +3930,13 @@ fn pop_af() {
     assert_eq!(cpu.registers.get_af(), 0x0DF0);
     assert_eq!(cpu.sp, 0xFFFE);
     assert_eq!(cpu.pc, 0x01);
+}
+
+#[test]
+fn jp_hl() {
+    let mut cpu = CPU::new();
+    cpu.registers.set_hl(0xBEEF);
+    cpu.bus.write_byte(0x00, 0xE9); // JP (HL)
+    cpu.step();
+    assert_eq!(cpu.pc, 0xBEEF);
 }
