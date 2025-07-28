@@ -3784,6 +3784,19 @@ fn add_a_d8() {
 }
 
 #[test]
+fn rst_00() {
+    let mut cpu = CPU::new();
+    cpu.pc = 0x100;
+    cpu.sp = 0xFFFE;
+    cpu.bus.write_byte(0x100, 0xC7); // RST 00H
+    cpu.step();
+    assert_eq!(cpu.pc, 0x00);
+    assert_eq!(cpu.sp, 0xFFFC);
+    assert_eq!(cpu.bus.read_byte(0xFFFC), 0x01); // LSB (0x100+1)
+    assert_eq!(cpu.bus.read_byte(0xFFFD), 0x01); // MSB
+}
+
+#[test]
 fn ret_z() {
   let mut cpu = CPU::new();
 
@@ -3904,6 +3917,19 @@ fn call_a16() {
     assert_eq!(cpu.sp, 0xFFFC);
     assert_eq!(cpu.bus.read_byte(0xFFFC), 0x03);
     assert_eq!(cpu.bus.read_byte(0xFFFD), 0x01);
+}
+
+#[test]
+fn rst_08() {
+    let mut cpu = CPU::new();
+    cpu.pc = 0x200;
+    cpu.sp = 0xFFFE;
+    cpu.bus.write_byte(0x200, 0xCF); // RST 08H
+    cpu.step();
+    assert_eq!(cpu.pc, 0x08);
+    assert_eq!(cpu.sp, 0xFFFC);
+    assert_eq!(cpu.bus.read_byte(0xFFFC), 0x01); // LSB (0x200+1)
+    assert_eq!(cpu.bus.read_byte(0xFFFD), 0x02); // MSB
 }
 
 #[test]
@@ -4097,6 +4123,19 @@ fn call_c_a16() {
 }
 
 #[test]
+fn rst_10() {
+    let mut cpu = CPU::new();
+    cpu.pc = 0x300;
+    cpu.sp = 0xFFFE;
+    cpu.bus.write_byte(0x300, 0xD7); // RST 10H
+    cpu.step();
+    assert_eq!(cpu.pc, 0x10);
+    assert_eq!(cpu.sp, 0xFFFC);
+    assert_eq!(cpu.bus.read_byte(0xFFFC), 0x01); // LSB (0x300+1)
+    assert_eq!(cpu.bus.read_byte(0xFFFD), 0x03); // MSB
+}
+
+#[test]
 fn push_de() {
     let mut cpu = CPU::new();
     cpu.registers.set_de(0x5678);
@@ -4107,6 +4146,19 @@ fn push_de() {
     assert_eq!(cpu.bus.read_byte(0xFFFC), 0x78); // LSB
     assert_eq!(cpu.bus.read_byte(0xFFFD), 0x56); // MSB
     assert_eq!(cpu.pc, 0x01);
+}
+
+#[test]
+fn rst_18() {
+    let mut cpu = CPU::new();
+    cpu.pc = 0x400;
+    cpu.sp = 0xFFFE;
+    cpu.bus.write_byte(0x400, 0xDF); // RST 18H
+    cpu.step();
+    assert_eq!(cpu.pc, 0x18);
+    assert_eq!(cpu.sp, 0xFFFC);
+    assert_eq!(cpu.bus.read_byte(0xFFFC), 0x01); // LSB (0x400+1)
+    assert_eq!(cpu.bus.read_byte(0xFFFD), 0x04); // MSB
 }
 
 #[test]
@@ -4137,6 +4189,19 @@ fn push_hl() {
 }
 
 #[test]
+fn rst_20() {
+    let mut cpu = CPU::new();
+    cpu.pc = 0x500;
+    cpu.sp = 0xFFFE;
+    cpu.bus.write_byte(0x500, 0xE7); // RST 20H
+    cpu.step();
+    assert_eq!(cpu.pc, 0x20);
+    assert_eq!(cpu.sp, 0xFFFC);
+    assert_eq!(cpu.bus.read_byte(0xFFFC), 0x01); // LSB (0x500+1)
+    assert_eq!(cpu.bus.read_byte(0xFFFD), 0x05); // MSB
+}
+
+#[test]
 fn pop_af() {
     let mut cpu = CPU::new();
     cpu.sp = 0xFFFC;
@@ -4160,6 +4225,19 @@ fn jp_hl() {
 }
 
 #[test]
+fn rst_28() {
+    let mut cpu = CPU::new();
+    cpu.pc = 0x600;
+    cpu.sp = 0xFFFE;
+    cpu.bus.write_byte(0x600, 0xEF); // RST 28H
+    cpu.step();
+    assert_eq!(cpu.pc, 0x28);
+    assert_eq!(cpu.sp, 0xFFFC);
+    assert_eq!(cpu.bus.read_byte(0xFFFC), 0x01); // LSB (0x600+1)
+    assert_eq!(cpu.bus.read_byte(0xFFFD), 0x06); // MSB
+}
+
+#[test]
 fn push_af() {
     let mut cpu = CPU::new();
     cpu.registers.set_af(0x0DF0);
@@ -4170,4 +4248,30 @@ fn push_af() {
     assert_eq!(cpu.bus.read_byte(0xFFFC), 0xF0); // LSB (Flags)
     assert_eq!(cpu.bus.read_byte(0xFFFD), 0x0D); // MSB (A)
     assert_eq!(cpu.pc, 0x01);
+}
+
+#[test]
+fn rst_30() {
+    let mut cpu = CPU::new();
+    cpu.pc = 0x700;
+    cpu.sp = 0xFFFE;
+    cpu.bus.write_byte(0x700, 0xF7); // RST 30H
+    cpu.step();
+    assert_eq!(cpu.pc, 0x30);
+    assert_eq!(cpu.sp, 0xFFFC);
+    assert_eq!(cpu.bus.read_byte(0xFFFC), 0x01); // LSB (0x700+1)
+    assert_eq!(cpu.bus.read_byte(0xFFFD), 0x07); // MSB
+}
+
+#[test]
+fn rst_38() {
+    let mut cpu = CPU::new();
+    cpu.pc = 0x800;
+    cpu.sp = 0xFFFE;
+    cpu.bus.write_byte(0x800, 0xFF); // RST 38H
+    cpu.step();
+    assert_eq!(cpu.pc, 0x38);
+    assert_eq!(cpu.sp, 0xFFFC);
+    assert_eq!(cpu.bus.read_byte(0xFFFC), 0x01); // LSB (0x800+1)
+    assert_eq!(cpu.bus.read_byte(0xFFFD), 0x08); // MSB
 }

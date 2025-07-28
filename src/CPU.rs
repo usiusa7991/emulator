@@ -213,6 +213,19 @@ impl CPU {
           self.pc.wrapping_add(1)
         }
       },
+      Instruction::RST(target) => {
+        self.push(self.pc.wrapping_add(1));
+        match target {
+          RstTarget::RST00 => 0x00,
+          RstTarget::RST08 => 0x08,
+          RstTarget::RST10 => 0x10,
+          RstTarget::RST18 => 0x18,
+          RstTarget::RST20 => 0x20,
+          RstTarget::RST28 => 0x28,
+          RstTarget::RST30 => 0x30,
+          RstTarget::RST38 => 0x38,
+        }
+      },
       Instruction::LD(load_type) => {
         match load_type {
           LoadType::Byte(target, source) => {

@@ -31,6 +31,10 @@ pub enum RetConditions {
   Always
 }
 
+pub enum RstTarget {
+  RST00, RST08, RST10, RST18, RST20, RST28, RST30, RST38
+}
+
 pub enum LoadByteTarget {
   A, B, C, D, E, H, L, BCI, DEI, HLI, HLIP, HLIM
 }
@@ -71,6 +75,7 @@ pub enum Instruction {
   JP(JumpConditions),
   JR(JumpRelativeConditions),
   RET(RetConditions),
+  RST(RstTarget),
   LD(LoadType),
   RLCA,
   RRCA,
@@ -370,24 +375,32 @@ impl Instruction {
       0xC4 => Some(Instruction::CALL(CallConditions::NoZeroFlag)),
       0xC5 => Some(Instruction::PUSH(StackTarget::BC)),
       0xC6 => Some(Instruction::ADD(AddType::Byte(AddByteTarget::A, AddByteSource::D8))),
+      0xC7 => Some(Instruction::RST(RstTarget::RST00)),
       0xCC => Some(Instruction::CALL(CallConditions::ZeroFlag)),
       0xCD => Some(Instruction::CALL(CallConditions::Always)),
       0xC8 => Some(Instruction::RET(RetConditions::ZeroFlag)),
       0xC9 => Some(Instruction::RET(RetConditions::Always)),
       0xCA => Some(Instruction::JP(JumpConditions::ZeroFlag)),
+      0xCF => Some(Instruction::RST(RstTarget::RST08)),
       0xD0 => Some(Instruction::RET(RetConditions::NoCarryFlag)),
       0xD1 => Some(Instruction::POP(StackTarget::DE)),
       0xD2 => Some(Instruction::JP(JumpConditions::NoCarryFlag)),
       0xD4 => Some(Instruction::CALL(CallConditions::NoCarryFlag)),
       0xD5 => Some(Instruction::PUSH(StackTarget::DE)),
+      0xD7 => Some(Instruction::RST(RstTarget::RST10)),
       0xDC => Some(Instruction::CALL(CallConditions::CarryFlag)),
       0xD8 => Some(Instruction::RET(RetConditions::CarryFlag)),
       0xDA => Some(Instruction::JP(JumpConditions::CarryFlag)),
+      0xDF => Some(Instruction::RST(RstTarget::RST18)),
       0xE1 => Some(Instruction::POP(StackTarget::HL)),
       0xE5 => Some(Instruction::PUSH(StackTarget::HL)),
+      0xE7 => Some(Instruction::RST(RstTarget::RST20)),
       0xE9 => Some(Instruction::JP(JumpConditions::HL)),
+      0xEF => Some(Instruction::RST(RstTarget::RST28)),
       0xF1 => Some(Instruction::POP(StackTarget::AF)),
       0xF5 => Some(Instruction::PUSH(StackTarget::AF)),
+      0xF7 => Some(Instruction::RST(RstTarget::RST30)),
+      0xFF => Some(Instruction::RST(RstTarget::RST38)),
       _ => None
     }
   }
