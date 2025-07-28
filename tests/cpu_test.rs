@@ -3741,6 +3741,49 @@ fn push_bc() {
 }
 
 #[test]
+fn add_a_d8() {
+    let mut cpu = CPU::new();
+    cpu.registers.a = 0x10;
+    cpu.bus.write_byte(0x00, 0xC6); // ADD A, d8
+    cpu.bus.write_byte(0x01, 0x20); // d8 = 0x20
+    cpu.step();
+    assert_eq!(cpu.registers.a, 0x30); // 0x10 + 0x20 = 0x30
+    assert!(!cpu.registers.f.zero);
+    assert!(!cpu.registers.f.subtract);
+    assert!(!cpu.registers.f.half_carry);
+    assert!(!cpu.registers.f.carry);
+    assert_eq!(cpu.pc, 0x02); // PCが2進む（1バイト命令 + 1バイト即値）
+
+    // ハーフキャリー
+    let mut cpu = CPU::new();
+    cpu.registers.a = 0x0F;
+    cpu.bus.write_byte(0x00, 0xC6);
+    cpu.bus.write_byte(0x01, 0x01);
+    cpu.step();
+    assert_eq!(cpu.registers.a, 0x10);
+    assert!(cpu.registers.f.half_carry);
+
+    // キャリー
+    let mut cpu = CPU::new();
+    cpu.registers.a = 0xFF;
+    cpu.bus.write_byte(0x00, 0xC6);
+    cpu.bus.write_byte(0x01, 0x01);
+    cpu.step();
+    assert_eq!(cpu.registers.a, 0x00);
+    assert!(cpu.registers.f.zero);
+    assert!(cpu.registers.f.carry);
+
+    // ゼロフラグ
+    let mut cpu = CPU::new();
+    cpu.registers.a = 0x00;
+    cpu.bus.write_byte(0x00, 0xC6);
+    cpu.bus.write_byte(0x01, 0x00);
+    cpu.step();
+    assert_eq!(cpu.registers.a, 0x00);
+    assert!(cpu.registers.f.zero);
+}
+
+#[test]
 fn ret_z() {
   let mut cpu = CPU::new();
 

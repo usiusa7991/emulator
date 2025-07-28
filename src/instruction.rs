@@ -87,7 +87,7 @@ pub enum AddByteTarget {
 }
 
 pub enum AddByteSource {
-  A, B, C, D, E, H, L, HLI
+  A, B, C, D, E, H, L, D8, HLI
 }
 
 pub enum AddTwoByteTarget {
@@ -369,6 +369,7 @@ impl Instruction {
       0xC3 => Some(Instruction::JP(JumpConditions::Always)),
       0xC4 => Some(Instruction::CALL(CallConditions::NoZeroFlag)),
       0xC5 => Some(Instruction::PUSH(StackTarget::BC)),
+      0xC6 => Some(Instruction::ADD(AddType::Byte(AddByteTarget::A, AddByteSource::D8))),
       0xCC => Some(Instruction::CALL(CallConditions::ZeroFlag)),
       0xCD => Some(Instruction::CALL(CallConditions::Always)),
       0xC8 => Some(Instruction::RET(RetConditions::ZeroFlag)),

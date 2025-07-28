@@ -68,6 +68,7 @@ impl CPU {
               AddByteSource::E => self.registers.e,
               AddByteSource::H => self.registers.h,
               AddByteSource::L => self.registers.l,
+              AddByteSource::D8 => self.read_next_byte(),
               AddByteSource::HLI => self.bus.read_byte(self.registers.get_hl()),
               _ => panic!("TODO: implement other AddByteSource"),
             };
@@ -75,6 +76,10 @@ impl CPU {
               AddByteTarget::A => self.add_to_a(source_value),
               _ => panic!("TODO: implement other AddByteTarget"),
             };
+            match source {
+              AddByteSource::D8 => self.pc.wrapping_add(2),
+              _ => self.pc.wrapping_add(1),
+            }
           },
           AddType::TwoByte(target, source) => {
             let source_value = match source {
@@ -88,9 +93,9 @@ impl CPU {
               AddTwoByteTarget::HL => self.add_to_hl(source_value),
               _ => panic!("TODO: implement other AddTwoByteTarget"),
             };
+            self.pc.wrapping_add(1)
           }
         }
-        self.pc.wrapping_add(1)
       },
       Instruction::ADC(target, source) => {
         let source_value = match source {
